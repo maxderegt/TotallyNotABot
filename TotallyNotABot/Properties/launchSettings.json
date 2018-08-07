@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TotallyNotABot": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\maxde\\Source\\Repos\\TotallyNotABot\\Voice"
+    }
+  }
+}
