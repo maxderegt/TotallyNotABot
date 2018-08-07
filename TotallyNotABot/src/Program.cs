@@ -30,7 +30,7 @@ namespace TotallyNotABot
             });
             voice = discord.UseVoiceNext();
 
-            myCommands.setdiscord(discord, voice);
+            myCommands.Setdiscord(discord, voice);
 
             discord.MessageCreated += async e =>
             {
