@@ -1,81 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
-using DSharpPlus.VoiceNext;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System.IO;
-using System.Diagnostics;
+using DSharpPlus.VoiceNext;
 using VideoLibrary;
 using YoutubeExplode;
-using System.Collections.Generic;
 
-namespace TotallyNotABot
+namespace TotallyNotABot.src.commands
 {
-    class Program
+    class Commands
     {
-        static DiscordClient discord;
-        static VoiceNextClient voice;
-        static CommandsNextModule commands;
-        static MyCommands myCommands = new MyCommands();
-        //bool EnableDms = false;
-
-
-        static void Main(string[] args)
-        {
-            MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
-        }
-
-        static async Task MainAsync(string[] args)
-        {
-            discord = new DiscordClient(new DiscordConfiguration
-            {
-                Token = "NDIwMzMzNjcyNDU4MzU0Njk4.DX9J-A.npSAUCUOYs-vOSJNwHNQTE3gKKw",
-                TokenType = TokenType.Bot,
-                UseInternalLogHandler = true,
-                LogLevel = LogLevel.Debug
-            });
-            voice = discord.UseVoiceNext();
-
-            myCommands.setdiscord(discord, voice);
-
-            discord.MessageCreated += async e =>
-            {
-                string message = e.Message.Content.ToLower();
-
-                if (e.Message.Author.Id != 420333672458354698)
-                {
-                    Console.WriteLine("recieved message : {0}", e.Message);
-                }
-            };
-
-            commands = discord.UseCommandsNext(new CommandsNextConfiguration
-            {
-                StringPrefix = "!",
-                EnableDms = false
-            });
-
-            commands.RegisterCommands<MyCommands>();
-            //commands.CommandErrored += Commands_CommandErrored;
-            
-            
-            await discord.ConnectAsync();
-            await Task.Delay(-1);
-        }
-
-        private static Task Commands_CommandErrored(CommandErrorEventArgs e)
-        {
-            Console.WriteLine(e);
-            throw new NotImplementedException();
-        }
-        
-        
-    }
-
-    public class MyCommands
-    {
-
+        private static string videoFile = "discordbot\\video.webm";
         static DiscordClient discord;
         static VoiceNextClient voice;
         static VoiceNextConnection connection;
@@ -83,9 +24,8 @@ namespace TotallyNotABot
         List<YoutubeExplode.Models.Video> PlayList = new List<YoutubeExplode.Models.Video>();
         Process ffmpeg;
         Queue<YoutubeExplode.Models.Video> QueueList = new Queue<YoutubeExplode.Models.Video>();
-        
 
-        public MyCommands()
+        public Commands()
         {
         }
 
@@ -101,6 +41,7 @@ namespace TotallyNotABot
             await ctx.RespondAsync($"👋 Hi, {ctx.User.Mention}!");
         }
 
+
         [Command("search")]
         public async Task Search(CommandContext ctx)
         {
@@ -113,7 +54,7 @@ namespace TotallyNotABot
             {
                 play = true;
                 input = input + msg[2];
-                for(int i = 3; i < msg.Length; i++)
+                for (int i = 3; i < msg.Length; i++)
                 {
                     input = input + " " + msg[i];
                 }
@@ -136,13 +77,13 @@ namespace TotallyNotABot
             if (play)
             {
                 PlayFromList(1);
-                PlayAudio("C:\\discordbot\\video.webm");
+                PlayAudio(videoFile);
             }
         }
 
         public void PlayFromList(int number)
         {
-            string url = "https://www.youtube.com/watch?v=" + list[number-1].Id;
+            string url = "https://www.youtube.com/watch?v=" + list[number - 1].Id;
             DownloadURL(url);
         }
 
@@ -167,7 +108,7 @@ namespace TotallyNotABot
 
             try
             {
-                await File.WriteAllBytesAsync(@"C:\discordbot\video.webm", video.GetBytes());
+                await File.WriteAllBytesAsync(videoFile, video.GetBytes());
             }
             catch (Exception ex)
             {
@@ -224,7 +165,7 @@ namespace TotallyNotABot
             {
                 await ctx.RespondAsync("Music is already being played");
             }
-        
+
         }
 
         [Command("play")]
@@ -232,8 +173,10 @@ namespace TotallyNotABot
         {
             int number;
             string[] msg = ctx.Message.Content.Split(" ");
-            if (msg.Length > 1) {
-                if (list.Count > 0) {
+            if (msg.Length > 1)
+            {
+                if (list.Count > 0)
+                {
                     if (int.TryParse(msg[1], out number))
                     {
                         string url = "https://www.youtube.com/watch?v=" + list[number - 1].Id;
@@ -264,9 +207,9 @@ namespace TotallyNotABot
                 await ctx.RespondAsync($"Please use the command !play [1-5] to select a song from the !search command");
             }
         }
-            
+
         public async void PlayAudio(string file)
-        {            
+        {
             await connection.SendSpeakingAsync(true); // send a speaking indicator
             int number;
             if (int.TryParse(file, out number))
@@ -274,10 +217,10 @@ namespace TotallyNotABot
                 if (number > 0 && number < list.Count)
                 {
                     PlayFromList(number);
-                    file = "C:\\discordbot\\video.webm";
+                    file = videoFile;
                 }
             }
-            
+
             var psi = new ProcessStartInfo
             {
                 FileName = "ffmpeg",
@@ -347,7 +290,7 @@ namespace TotallyNotABot
             if (connection != null)
                 if (QueueList.Count > 0)
                 {
-                    var video = QueueList.Dequeue();                 
+                    var video = QueueList.Dequeue();
                     DownloadURL("https://www.youtube.com/watch?v=" + video.Id);
                     DiscordGame test = new DiscordGame
                     {
@@ -356,7 +299,7 @@ namespace TotallyNotABot
                         State = "playing music"
                     };
                     discord.UpdateStatusAsync(game: test);
-                    PlayAudio("C:\\discordbot\\video.webm");
+                    PlayAudio(videoFile);
                 }
                 else
                 {

@@ -13,6 +13,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="commands\**" />
+    <EmbeddedResource Remove="commands\**" />
+    <None Remove="commands\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="ffmpeg.exe" />
   </ItemGroup>
 
@@ -25,7 +31,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="commands\" />
+    <Folder Include="src\audio\source\" />
+    <Folder Include="src\audio\playback\" />
   </ItemGroup>
 
 </Project>
