@@ -2,7 +2,7 @@
   "profiles": {
     "TotallyNotABot": {
       "commandName": "Project",
-      "workingDirectory": "C:\\Users\\maxde\\Source\\Repos\\TotallyNotABot\\Voice"
+      "workingDirectory": "../Voice/x64_cwd"
     }
   }
 }
