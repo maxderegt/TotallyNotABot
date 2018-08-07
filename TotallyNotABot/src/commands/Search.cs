@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.VoiceNext;
 using TotallyNotABot.src.audio;
 using YoutubeExplode;
 using YoutubeExplode.Models;

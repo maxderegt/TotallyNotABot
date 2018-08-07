@@ -23,7 +23,7 @@ namespace TotallyNotABot
         {
             discord = new DiscordClient(new DiscordConfiguration
             {
-                Token = "NDIwMzMzNjcyNDU4MzU0Njk4.DX9J-A.npSAUCUOYs-vOSJNwHNQTE3gKKw",
+                Token = "",
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
                 LogLevel = LogLevel.Debug

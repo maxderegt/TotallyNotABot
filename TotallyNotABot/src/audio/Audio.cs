@@ -6,6 +6,7 @@ using System.Text;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
+using TotallyNotABot.src.commands;
 using VideoLibrary;
 
 namespace TotallyNotABot.src.audio
@@ -17,18 +18,15 @@ namespace TotallyNotABot.src.audio
         public Queue<YoutubeExplode.Models.Video> QueueList = new Queue<YoutubeExplode.Models.Video>();
 
         public Process ffmpeg { get; set; }
-        static DiscordClient discord;
         public static string videoFile = "discordbot\\video.webm";
-        private VoiceNextConnection connection;
 
-        public Audio(VoiceNextConnection connection)
+        public Audio()
         {
-            this.connection = connection;
         }
 
         public void CheckQueue()
         {
-            if (connection != null)
+            if (Commands._connection != null)
                 if (QueueList.Count > 0)
                 {
                     var video = QueueList.Dequeue();
@@ -39,12 +37,12 @@ namespace TotallyNotABot.src.audio
                         Details = "",
                         State = "playing music"
                     };
-                    discord.UpdateStatusAsync(game: test);
+                    Commands._discord.UpdateStatusAsync(game: test);
                     PlayAudio(videoFile);
                 }
                 else
                 {
-                    discord.UpdateStatusAsync(null);
+                    Commands._discord.UpdateStatusAsync(null);
                 }
         }
 
@@ -71,7 +69,7 @@ namespace TotallyNotABot.src.audio
 
         public async void PlayAudio(string file)
         {
-            await connection.SendSpeakingAsync(true); // send a speaking indicator
+            await Commands._connection.SendSpeakingAsync(true); // send a speaking indicator
             int number;
             if (int.TryParse(file, out number))
             {
@@ -117,7 +115,7 @@ namespace TotallyNotABot.src.audio
                     }
 
 
-                    await connection.SendAsync(buff, 20);
+                    await Commands._connection.SendAsync(buff, 20);
                 }
                 while ((br = ffout.Read(buff, 0, buff.Length)) > 0)
                 {
@@ -125,7 +123,7 @@ namespace TotallyNotABot.src.audio
                         for (var i = br; i < buff.Length; i++)
                             buff[i] = 0;
 
-                    await connection.SendAsync(buff, 20);
+                    await Commands._connection.SendAsync(buff, 20);
                 }
 
             }
@@ -136,7 +134,7 @@ namespace TotallyNotABot.src.audio
 
             try
             {
-                await connection.SendSpeakingAsync(false); // we're not speaking anymore
+                await Commands._connection.SendSpeakingAsync(false); // we're not speaking anymore
                 CheckQueue();
             }
             catch (Exception ex)

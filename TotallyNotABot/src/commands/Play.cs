@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.VoiceNext;
 using TotallyNotABot.src.audio;
 
 namespace TotallyNotABot.src.commands
@@ -32,9 +33,13 @@ namespace TotallyNotABot.src.commands
                     await ctx.RespondAsync($"{String.Join("\n", templist)}");
 
                     if (audio.ffmpeg == null)
+                    {
                         audio.CheckQueue();
+                    }
                     else if (audio.ffmpeg.HasExited)
+                    {
                         audio.CheckQueue();
+                    }
                 }
                 else
                 {

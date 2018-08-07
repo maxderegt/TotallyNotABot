@@ -18,9 +18,9 @@ namespace TotallyNotABot.src.commands
     class Commands
     {
         // Discord connection
-        private static VoiceNextClient _voice;
-        private static VoiceNextConnection _connection;
-        private static DiscordClient _discord;
+        public static VoiceNextClient _voice;
+        public static VoiceNextConnection _connection;
+        public static DiscordClient _discord;
 
         // Commands
         private static Search _searchCommand;
@@ -49,7 +49,7 @@ namespace TotallyNotABot.src.commands
         {
             _discord = client;
             _voice = voice;
-            _audio = new Audio(_connection);
+            _audio = new Audio();
         }
 
         [Command("search")]
