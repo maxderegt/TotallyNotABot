@@ -32,7 +32,9 @@ namespace TotallyNotABot
             discord = new DiscordClient(new DiscordConfiguration
             {
                 Token = "NDIwMzMzNjcyNDU4MzU0Njk4.DX9J-A.npSAUCUOYs-vOSJNwHNQTE3gKKw",
-                TokenType = TokenType.Bot
+                TokenType = TokenType.Bot,
+                UseInternalLogHandler = true,
+                LogLevel = LogLevel.Debug
             });
             voice = discord.UseVoiceNext();
 
@@ -174,7 +176,7 @@ namespace TotallyNotABot
         }
 
         [Command("spam")]
-        public async Task spam(CommandContext ctx)
+        public async Task Spam(CommandContext ctx)
         {
             string[] msg = ctx.Message.Content.Split(" ");
             if (msg.Length == 1)
@@ -208,7 +210,7 @@ namespace TotallyNotABot
         }
 
         [Command("start")]
-        public async Task Play(CommandContext ctx, [RemainingText] string file)
+        public async Task Start(CommandContext ctx, [RemainingText] string file)
         {
             if (ffmpeg == null)
             {
@@ -226,7 +228,7 @@ namespace TotallyNotABot
         }
 
         [Command("play")]
-        public async Task Queue(CommandContext ctx)
+        public async Task Play(CommandContext ctx)
         {
             int number;
             string[] msg = ctx.Message.Content.Split(" ");
