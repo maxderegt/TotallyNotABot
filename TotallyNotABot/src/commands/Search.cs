@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.VoiceNext;
-using TotallyNotABot.src.audio;
+using TotallyNotABot.audio;
 using YoutubeExplode;
 using YoutubeExplode.Models;
 
-namespace TotallyNotABot.src.commands
+namespace TotallyNotABot.commands
 {
     class Search
     {
         public async Task RunCommand(CommandContext ctx, Audio audio)
         {
-            audio.list.Clear();
+            audio.List.Clear();
 
             string[] msg = ctx.Message.Content.Split(" ");
             string input = "";
@@ -40,13 +37,13 @@ namespace TotallyNotABot.src.commands
             IReadOnlyList<Video> temp = await client.SearchVideosAsync(input, 1);
             for (int i = 0; i < 5; i++)
             {
-                audio.list.Add(temp[i]);
+                audio.List.Add(temp[i]);
             }
-            await ctx.RespondAsync($"{string.Join("\n", audio.list)}");
+            await ctx.RespondAsync($"{string.Join("\n", audio.List)}");
             if (play)
             {
                 audio.PlayFromList(1);
-                audio.PlayAudio(Audio.videoFile);
+                audio.PlayAudio(Audio.VideoFile);
             }
         }
     }

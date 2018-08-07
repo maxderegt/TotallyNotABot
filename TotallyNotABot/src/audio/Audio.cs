@@ -2,23 +2,21 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
-using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
-using TotallyNotABot.src.commands;
+using TotallyNotABot.commands;
 using VideoLibrary;
+using Video = YoutubeExplode.Models.Video;
 
-namespace TotallyNotABot.src.audio
+namespace TotallyNotABot.audio
 {
     class Audio
     {
-        public List<YoutubeExplode.Models.Video> list = new List<YoutubeExplode.Models.Video>();
+        public List<YoutubeExplode.Models.Video> List = new List<YoutubeExplode.Models.Video>();
         public List<YoutubeExplode.Models.Video> PlayList = new List<YoutubeExplode.Models.Video>();
         public Queue<YoutubeExplode.Models.Video> QueueList = new Queue<YoutubeExplode.Models.Video>();
 
         public Process ffmpeg { get; set; }
-        public static string videoFile = "discordbot\\video.webm";
+        public static string VideoFile = "discordbot\\video.webm";
 
         public Audio()
         {
@@ -26,34 +24,36 @@ namespace TotallyNotABot.src.audio
 
         public void CheckQueue()
         {
-            if (Commands._connection != null)
-                if (QueueList.Count > 0)
+            if (Commands.Connection == null) return;
+            if (QueueList.Count > 0)
+            {
+                Video video = QueueList.Dequeue();
+                DownloadUrl("https://www.youtube.com/watch?v=" + video.Id);
+                DiscordGame test = new DiscordGame
                 {
-                    var video = QueueList.Dequeue();
-                    DownloadURL("https://www.youtube.com/watch?v=" + video.Id);
-                    DiscordGame test = new DiscordGame
-                    {
-                        Name = video.Title,
-                        Details = "",
-                        State = "playing music"
-                    };
-                    Commands._discord.UpdateStatusAsync(game: test);
-                    PlayAudio(videoFile);
-                }
-                else
-                {
-                    Commands._discord.UpdateStatusAsync(null);
-                }
+                    Name = video.Title,
+                    Details = "",
+                    State = "playing music"
+                };
+                Commands.Discord.UpdateStatusAsync(game: test);
+                PlayAudio(VideoFile);
+            }
+            else
+            {
+                Commands.Discord.UpdateStatusAsync(null);
+            }
         }
 
-        public async void DownloadURL(string url)
+        public async void DownloadUrl(string url)
         {
-            var youTube = YouTube.Default; // starting point for YouTube actions
-            var video = youTube.GetVideo(url); // gets a Video object with info about the video
+            // starting point for YouTube actions
+            YouTube youTube = YouTube.Default;
+            // gets a Video object with info about the video
+            YouTubeVideo video = youTube.GetVideo(url);
 
             try
             {
-                await File.WriteAllBytesAsync(videoFile, video.GetBytes());
+                await File.WriteAllBytesAsync(VideoFile, video.GetBytes());
             }
             catch (Exception ex)
             {
@@ -63,24 +63,24 @@ namespace TotallyNotABot.src.audio
 
         public void PlayFromList(int number)
         {
-            string url = "https://www.youtube.com/watch?v=" + list[number - 1].Id;
-            DownloadURL(url);
+            string url = "https://www.youtube.com/watch?v=" + List[number - 1].Id;
+            DownloadUrl(url);
         }
 
         public async void PlayAudio(string file)
         {
-            await Commands._connection.SendSpeakingAsync(true); // send a speaking indicator
-            int number;
-            if (int.TryParse(file, out number))
+            // send a speaking indicator
+            await Commands.Connection.SendSpeakingAsync();
+            if (int.TryParse(file, out int number))
             {
-                if (number > 0 && number < list.Count)
+                if (number > 0 && number < List.Count)
                 {
                     PlayFromList(number);
-                    file = videoFile;
+                    file = VideoFile;
                 }
             }
 
-            var psi = new ProcessStartInfo
+            ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = "ffmpeg",
                 Arguments = $@"-i ""{file}"" -ac 2 -f s16le -ar 48000 pipe:1",
@@ -88,25 +88,35 @@ namespace TotallyNotABot.src.audio
                 UseShellExecute = false
             };
             ffmpeg = Process.Start(psi);
-            var ffout = ffmpeg.StandardOutput.BaseStream;
+            if (ffmpeg == null)
+            {
+                throw new Exception("Couldn't start ffmpeg with file: " + file);
+            }
+            Stream ffout = ffmpeg.StandardOutput.BaseStream;
 
-            var buff = new byte[3840];
-            var br = 0;
+            byte[] buff = new byte[3840];
 
             try
             {
+                int br;
                 while ((br = ffout.Read(buff, 0, buff.Length)) > 0)
                 {
-                    if (br < buff.Length) // not a full sample, mute the rest
-                        for (var i = br; i < buff.Length; i++)
+                    // not a full sample, mute the rest
+                    if (br < buff.Length)
+                    {
+                        for (int i = br; i < buff.Length; i++)
+                        {
                             buff[i] = 0;
-
+                        }
+                    }
                     for (int i = 0; i < buff.Length / 2; ++i)
                     {
 
                         // convert to 16-bit
-                        short sample = (short)((buff[i * 2 + 1] << 8) | buff[i * 2]);// scale
-                        const double gain = 0.2; // value between 0 and 1.0
+                        // scale
+                        short sample = (short)((buff[i * 2 + 1] << 8) | buff[i * 2]);
+                        // value between 0 and 1.0
+                        const double gain = 0.2;
                         sample = (short)(sample * gain);
 
                         // back to byte[]
@@ -115,15 +125,19 @@ namespace TotallyNotABot.src.audio
                     }
 
 
-                    await Commands._connection.SendAsync(buff, 20);
+                    await Commands.Connection.SendAsync(buff, 20);
                 }
                 while ((br = ffout.Read(buff, 0, buff.Length)) > 0)
                 {
-                    if (br < buff.Length) // not a full sample, mute the rest
-                        for (var i = br; i < buff.Length; i++)
+                    // not a full sample, mute the rest
+                    if (br < buff.Length)
+                    {
+                        for (int i = br; i < buff.Length; i++)
+                        {
                             buff[i] = 0;
-
-                    await Commands._connection.SendAsync(buff, 20);
+                        }
+                    }
+                    await Commands.Connection.SendAsync(buff, 20);
                 }
 
             }
@@ -134,7 +148,8 @@ namespace TotallyNotABot.src.audio
 
             try
             {
-                await Commands._connection.SendSpeakingAsync(false); // we're not speaking anymore
+                // we're not speaking anymore
+                await Commands.Connection.SendSpeakingAsync(false);
                 CheckQueue();
             }
             catch (Exception ex)

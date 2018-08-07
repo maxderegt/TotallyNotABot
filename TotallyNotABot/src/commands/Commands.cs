@@ -1,26 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
-using TotallyNotABot.src.audio;
-using VideoLibrary;
-using YoutubeExplode;
+using TotallyNotABot.audio;
 
-namespace TotallyNotABot.src.commands
+namespace TotallyNotABot.commands
 {
     class Commands
     {
         // Discord connection
-        public static VoiceNextClient _voice;
-        public static VoiceNextConnection _connection;
-        public static DiscordClient _discord;
+        public static VoiceNextClient Voice;
+        public static VoiceNextConnection Connection;
+        public static DiscordClient Discord;
 
         // Commands
         private static Search _searchCommand;
@@ -34,8 +26,13 @@ namespace TotallyNotABot.src.commands
         // Other stuff
         private static Audio _audio;
 
-        public Commands()
+        public static void Init(DiscordClient client, VoiceNextClient voice)
         {
+            Discord = client;
+            Voice = voice;
+            _audio = new Audio();
+
+            // Commands
             _searchCommand = new Search();
             _startCommand = new Start();
             _playCommand = new Play();
@@ -45,12 +42,6 @@ namespace TotallyNotABot.src.commands
             _leaveCommand = new Leave();
         }
 
-        public void Setdiscord(DiscordClient client, VoiceNextClient voice)
-        {
-            _discord = client;
-            _voice = voice;
-            _audio = new Audio();
-        }
 
         [Command("search")]
         public async Task Search(CommandContext ctx)
@@ -61,7 +52,7 @@ namespace TotallyNotABot.src.commands
         [Command("spam")]
         public async Task Spam(CommandContext ctx)
         {
-            await _spamCommand.RunCommand(ctx, _discord);
+            await _spamCommand.RunCommand(ctx, Discord);
         }
 
         [Command("start")]
@@ -85,14 +76,14 @@ namespace TotallyNotABot.src.commands
         [Command("join")]
         public async Task Join(CommandContext ctx)
         {
-            _connection = await _joinCommand.RunCommand(ctx, _audio, _connection, _voice);
+            Connection = await _joinCommand.RunCommand(ctx, _audio, Connection, Voice);
         }
 
         [Command("leave")]
         public async Task Leave(CommandContext ctx)
         {
             await _stopCommand.RunCommand(ctx, _audio);
-            await _leaveCommand.RunCommand(ctx, _connection);
+            await _leaveCommand.RunCommand(ctx, Connection);
         }
     }
 }
