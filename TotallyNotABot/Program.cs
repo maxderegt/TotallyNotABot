@@ -392,8 +392,11 @@ namespace TotallyNotABot
                 var channel = ctx.Member.VoiceState.Channel;
                 if (channel == null)
                     Console.WriteLine("You need to be in a voice channel.");
-                connection = await voice.ConnectAsync(channel);
-                Console.WriteLine("connection established");
+                else
+                {
+                    connection = await voice.ConnectAsync(channel);
+                    Console.WriteLine("connection established");
+                }
             }
         }
 
@@ -408,6 +411,7 @@ namespace TotallyNotABot
 
             await ctx.RespondAsync("Bye Bye");
             connection.Disconnect();
+            connection = null;
         }
 
         [Command("ping")]
