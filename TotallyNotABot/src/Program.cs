@@ -1,63 +1,55 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DSharpPlus;
-using DSharpPlus.VoiceNext;
 using DSharpPlus.CommandsNext;
-using TotallyNotABot.src.commands;
+using DSharpPlus.VoiceNext;
+using TotallyNotABot.commands;
+using TotallyNotABot.core;
 
 namespace TotallyNotABot
 {
     class Program
     {
-        static DiscordClient discord;
-        static VoiceNextClient voice;
-        static CommandsNextModule commands;
-        static Commands myCommands = new Commands();
-
         private static void Main(string[] args)
         {
+            if (!Settings.Load()) {
+                return;
+            }
+
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         private static async Task MainAsync(string[] args)
         {
-            discord = new DiscordClient(new DiscordConfiguration
+            DiscordClient discord = new DiscordClient(new DiscordConfiguration
             {
-                Token = "",
+                Token = Settings.Token,
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
                 LogLevel = LogLevel.Debug
             });
-            voice = discord.UseVoiceNext();
+            VoiceNextClient voice = discord.UseVoiceNext();
 
-            myCommands.Setdiscord(discord, voice);
+            Commands.Init(discord, voice);
 
             discord.MessageCreated += async e =>
             {
-                string message = e.Message.Content.ToLower();
-
                 if (e.Message.Author.Id != 420333672458354698)
                 {
                     Console.WriteLine("recieved message : {0}", e.Message);
                 }
             };
 
-            commands = discord.UseCommandsNext(new CommandsNextConfiguration
+            CommandsNextModule commandsModule = discord.UseCommandsNext(new CommandsNextConfiguration
             {
-                StringPrefix = "!",
+                StringPrefix = Settings.Prefix,
                 EnableDms = false
             });
 
-            commands.RegisterCommands<Commands>();
+            commandsModule.RegisterCommands<Commands>();
             
             await discord.ConnectAsync();
             await Task.Delay(-1);
-        }
-
-        private static Task Commands_CommandErrored(CommandErrorEventArgs e)
-        {
-            Console.WriteLine(e);
-            throw new NotImplementedException();
         }
     }
 }

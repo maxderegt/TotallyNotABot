@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.VoiceNext;
 
-namespace TotallyNotABot.src.commands
+namespace TotallyNotABot.commands
 {
     class Leave
     {
@@ -18,7 +15,6 @@ namespace TotallyNotABot.src.commands
 
             await ctx.RespondAsync("Bye Bye");
             connection.Disconnect();
-            connection = null;
         }
     }
 }

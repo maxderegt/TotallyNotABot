@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
-using TotallyNotABot.src.audio;
+using TotallyNotABot.audio;
 
-namespace TotallyNotABot.src.commands
+namespace TotallyNotABot.commands
 {
     class Stop
     {

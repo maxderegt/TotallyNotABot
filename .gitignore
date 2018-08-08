@@ -1,6 +1,7 @@
 # Bot stuff
 # videos
 *.webm
+settings.xml
 token.txt
 
 ## Ignore Visual Studio temporary files, build results, and

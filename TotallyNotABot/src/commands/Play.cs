@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.VoiceNext;
-using TotallyNotABot.src.audio;
+using TotallyNotABot.audio;
 
-namespace TotallyNotABot.src.commands
+namespace TotallyNotABot.commands
 {
     class Play
     {
@@ -15,12 +13,11 @@ namespace TotallyNotABot.src.commands
             string[] msg = ctx.Message.Content.Split(" ");
             if (msg.Length > 1)
             {
-                if (audio.list.Count > 0)
+                if (audio.List.Count > 0)
                 {
                     if (int.TryParse(msg[1], out int number))
                     {
-                        string url = "https://www.youtube.com/watch?v=" + audio.list[number - 1].Id;
-                        audio.QueueList.Enqueue(audio.list[number - 1]);
+                        audio.QueueList.Enqueue(audio.List[number - 1]);
                     }
                     await ctx.RespondAsync($"Added to queue");
 
@@ -30,7 +27,7 @@ namespace TotallyNotABot.src.commands
                     {
                         templist.Add(item.Title);
                     }
-                    await ctx.RespondAsync($"{String.Join("\n", templist)}");
+                    await ctx.RespondAsync($"{string.Join("\n", templist)}");
 
                     if (audio.ffmpeg == null)
                     {

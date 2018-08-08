@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-using TotallyNotABot.src.audio;
 
-namespace TotallyNotABot.src.commands
+namespace TotallyNotABot.commands
 {
     class Spam
     {
@@ -24,13 +21,12 @@ namespace TotallyNotABot.src.commands
                 {
                     char[] remove = { '<', '@', '>', '!' };
                     string idstring = msg[1].Trim(remove);
-                    ulong id = UInt64.Parse(idstring);
+                    ulong id = ulong.Parse(idstring);
 
                     DiscordUser user = await discord.GetUserAsync(id);
                     DiscordDmChannel channel = await discord.CreateDmAsync(user);
 
-                    int j = 1;
-                    Int32.TryParse(msg[2], out j);
+                    int.TryParse(msg[2], out int j);
                     if (j < 6 || ctx.Member.IsOwner)
                         for (int i = 0; i < j; i++)
                         {
