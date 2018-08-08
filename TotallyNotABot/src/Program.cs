@@ -5,6 +5,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.VoiceNext;
 using TotallyNotABot.commands;
+using TotallyNotABot.src.core;
 
 namespace TotallyNotABot
 {
@@ -12,7 +13,10 @@ namespace TotallyNotABot
     {
         private static void Main(string[] args)
         {
-            MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
+            Settings settings = Settings.load();
+
+
+//            MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         private static async Task MainAsync(string[] args)
