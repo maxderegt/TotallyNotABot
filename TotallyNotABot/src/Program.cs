@@ -2,10 +2,9 @@
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.EventArgs;
 using DSharpPlus.VoiceNext;
 using TotallyNotABot.commands;
-using TotallyNotABot.src.core;
+using TotallyNotABot.core;
 
 namespace TotallyNotABot
 {
@@ -13,17 +12,18 @@ namespace TotallyNotABot
     {
         private static void Main(string[] args)
         {
-            Settings settings = Settings.load();
+            if (!Settings.Load()) {
+                return;
+            }
 
-
-//            MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
+            MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         private static async Task MainAsync(string[] args)
         {
             DiscordClient discord = new DiscordClient(new DiscordConfiguration
             {
-                Token = "",
+                Token = Settings.Token,
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
                 LogLevel = LogLevel.Debug
@@ -42,7 +42,7 @@ namespace TotallyNotABot
 
             CommandsNextModule commandsModule = discord.UseCommandsNext(new CommandsNextConfiguration
             {
-                StringPrefix = "!",
+                StringPrefix = Settings.Prefix,
                 EnableDms = false
             });
 

@@ -1,30 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
-namespace TotallyNotABot.src.core
+namespace TotallyNotABot.core
 {
+    class InvalidSettingsException : Exception
+    {
+        public InvalidSettingsException(string message)
+            : base(message)
+        {
+        }
+    }
+
     class Settings
     {
         public static string SettingsFile = "discordbot\\settings.xml";
-        public string Token { get; }
-        public string Prefix { get;  }
+        public static string Token { get; set; }
+        public static string Prefix { get; set; }
 
-        public static Settings load()
+        public static bool Load()
         {
-            XDocument xml = XDocument.Load(SettingsFile);
-            string token = xml.Descendants("token").First().Value;
-            string prefix = xml.Descendants("prefix").First().Value;
-            return new Settings(token, prefix);
+            try
+            {
+                XDocument xml = XDocument.Load(SettingsFile);
+                Token = xml.Descendants("token").First().Value;
+                if (Token.Length == 0)
+                {
+                    throw new InvalidSettingsException("Missing \"token\" in settings!");
+                }
+
+                Prefix = xml.Descendants("prefix").First().Value;
+                if (Prefix.Length == 0)
+                {
+                    throw new InvalidSettingsException("Missing \"prefix\" in settings!");
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("Couldn't read settings file: " + SettingsFile);
+                return false;
+            }
+            
+            return true;
         }
 
-        public Settings(string token, string prefix)
-        {
-            Token = token;
-            Prefix = prefix;
-        }
 
     }
 }
