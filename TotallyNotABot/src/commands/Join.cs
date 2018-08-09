@@ -22,7 +22,9 @@ namespace TotallyNotABot.commands
             }
             DiscordChannel channel = ctx.Member.VoiceState.Channel;
             if (channel == null)
-                Console.WriteLine("You need to be in a voice channel.");
+            {
+                await ctx.RespondAsync("You need to be in a voice channel.");
+            }
             else
             {
                 connection = await voice.ConnectAsync(channel);

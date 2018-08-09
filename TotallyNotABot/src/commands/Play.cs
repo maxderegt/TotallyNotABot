@@ -8,44 +8,54 @@ namespace TotallyNotABot.commands
 {
     class Play
     {
-        public async Task RunCommand(CommandContext ctx, Audio audio)
+
+        /// <summary>
+        /// Validate the input given by the user
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="audio"></param>
+        /// <returns>the number passed by the user or -1 if it is invalid</returns>
+        private async Task<int> CheckMessage(CommandContext ctx, Audio audio)
         {
             string[] msg = ctx.Message.Content.Split(" ");
-            if (msg.Length > 1)
+            // Length of the message
+            if (msg.Length <= 1) {
+                await ctx.RespondAsync($"Please use the command !play [1-5] to select a song from the !search command");
+                return -1;
+            }
+            string command = msg[1];
+            // The search command has to have been called before
+            if (audio.List.Count < 0) {
+                await ctx.RespondAsync($"Please use the command !search [name of a song] first");
+                return -1;
+            }
+            // The message is a valid number
+            if (int.TryParse(command, out int number)) {
+                if (number >= 1 || number <= 5) {
+                    return number;
+                }
+            }
+            await ctx.RespondAsync($"Please pass a valid number between 1 and 5");
+            return -1;
+        }
+
+        public async Task RunCommand(CommandContext ctx, Audio audio)
+        {
+            int number = await this.CheckMessage(ctx, audio);
+            if (number == -1) {
+                return;
+            }
+
+            audio.QueueList.Enqueue(audio.List[number - 1]);
+            await ctx.RespondAsync($"Added to queue");
+            await ctx.RespondAsync($"{string.Join("\n", audio.QueueList)}");
+            if (audio.ffmpeg == null || audio.ffmpeg.HasExited)
             {
-                if (audio.List.Count > 0)
-                {
-                    if (int.TryParse(msg[1], out int number))
-                    {
-                        audio.QueueList.Enqueue(audio.List[number - 1]);
-                    }
-                    await ctx.RespondAsync($"Added to queue");
-
-                    List<string> templist = new List<string>();
-
-                    foreach (YoutubeExplode.Models.Video item in audio.QueueList)
-                    {
-                        templist.Add(item.Title);
-                    }
-                    await ctx.RespondAsync($"{string.Join("\n", templist)}");
-
-                    if (audio.ffmpeg == null)
-                    {
-                        audio.CheckQueue();
-                    }
-                    else if (audio.ffmpeg.HasExited)
-                    {
-                        audio.CheckQueue();
-                    }
-                }
-                else
-                {
-                    await ctx.RespondAsync($"Please use the command !search [name of a song] first");
-                }
+                audio.CheckQueue();
             }
             else
             {
-                await ctx.RespondAsync($"Please use the command !play [1-5] to select a song from the !search command");
+                Console.Error.WriteLine("ffmpeg is already running!");
             }
         }
     }
