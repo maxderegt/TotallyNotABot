@@ -25,7 +25,7 @@ namespace TotallyNotABot.commands
             }
             string command = msg[1];
             // The search command has to have been called before
-            if (audio.List.Count < 0) {
+            if (audio.SearchList.Count < 0) {
                 await ctx.RespondAsync($"Please use the command !search [name of a song] first");
                 return -1;
             }
@@ -46,7 +46,7 @@ namespace TotallyNotABot.commands
                 return;
             }
 
-            audio.QueueList.Enqueue(audio.List[number - 1]);
+            audio.Enqueue(audio.SearchList[number - 1]);
             await ctx.RespondAsync($"Added to queue");
             await ctx.RespondAsync($"{string.Join("\n", audio.QueueList)}");
             if (audio.ffmpeg == null || audio.ffmpeg.HasExited)

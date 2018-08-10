@@ -11,32 +11,60 @@ namespace TotallyNotABot.audio
 {
     class Audio
     {
-        public List<YoutubeExplode.Models.Video> List = new List<YoutubeExplode.Models.Video>();
-        public List<YoutubeExplode.Models.Video> PlayList = new List<YoutubeExplode.Models.Video>();
-        public Queue<YoutubeExplode.Models.Video> QueueList = new Queue<YoutubeExplode.Models.Video>();
+        public static readonly string VideoFile = "discordbot\\video.webm";
+        // List tracking songs resulting from the search command
+        public List<Song> SearchList;
+        // Queue of songs currently playing
+        public Queue<Song> QueueList;
 
         public Process ffmpeg { get; set; }
-        public static string VideoFile = "discordbot\\video.webm";
 
         public Audio()
         {
+            SearchList = new List<Song>();
+            QueueList = new Queue<Song>();
         }
+
+        public void Enqueue(Song song)
+        {
+            QueueList.Enqueue(song);
+        }
+
+        public void Searched(IReadOnlyList<Video> videos)
+        {
+            this.SearchList.Clear();
+            foreach (Video video in videos)
+            {
+                this.SearchList.Add(new Song(video));
+            }
+        }
+
+
+
 
         public void CheckQueue()
         {
             if (Commands.Connection == null) return;
             if (QueueList.Count > 0)
             {
-                Video video = QueueList.Dequeue();
-                DownloadUrl("https://www.youtube.com/watch?v=" + video.Id);
+                Song song = QueueList.Dequeue();
+                DownloadUrl(song.Url);
                 DiscordGame test = new DiscordGame
                 {
-                    Name = video.Title,
+                    Name = song.Title,
                     Details = "",
                     State = "playing music"
                 };
                 Commands.Discord.UpdateStatusAsync(game: test);
-                PlayAudio(VideoFile);
+
+                try
+                {
+                    PlayAudio();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
             }
             else
             {
@@ -61,21 +89,22 @@ namespace TotallyNotABot.audio
             }
         }
 
-        public void PlayFromList(int number)
+        public void DownloadVideo(int number)
         {
-            string url = "https://www.youtube.com/watch?v=" + List[number - 1].Id;
-            DownloadUrl(url);
+            DownloadUrl(SearchList[number -1].Url);
         }
 
-        public async void PlayAudio(string file)
+        public async void PlayAudio()
         {
+            // WTF is this?!
+            string file = VideoFile;
             // send a speaking indicator
             await Commands.Connection.SendSpeakingAsync();
             if (int.TryParse(file, out int number))
             {
-                if (number > 0 && number < List.Count)
+                if (number > 0 && number < SearchList.Count)
                 {
-                    PlayFromList(number);
+                    DownloadVideo(number);
                     file = VideoFile;
                 }
             }

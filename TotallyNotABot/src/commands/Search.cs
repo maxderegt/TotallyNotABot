@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using TotallyNotABot.audio;
@@ -11,8 +12,7 @@ namespace TotallyNotABot.commands
     {
         public async Task RunCommand(CommandContext ctx, Audio audio)
         {
-            audio.List.Clear();
-
+            // Parse user input    
             string[] msg = ctx.Message.Content.Split(" ");
             string input = "";
             bool play = false;
@@ -33,17 +33,27 @@ namespace TotallyNotABot.commands
                     input = input + " " + msg[i];
                 }
             }
+
+            // Get the youtube videos
             YoutubeClient client = new YoutubeClient();
-            IReadOnlyList<Video> temp = await client.SearchVideosAsync(input, 1);
-            for (int i = 0; i < 5; i++)
-            {
-                audio.List.Add(temp[i]);
-            }
-            await ctx.RespondAsync($"{string.Join("\n", audio.List)}");
+            audio.Searched(await client.SearchVideosAsync(input, 1));
+
+            // Respond to the user
             if (play)
             {
-                audio.PlayFromList(1);
-                audio.PlayAudio(Audio.VideoFile);
+                // Download the video
+                audio.DownloadVideo(1);
+                try
+                {
+                    audio.PlayAudio();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return;
+                }
+                await ctx.RespondAsync($"{string.Join("\n", audio.SearchList)}");
+
             }
         }
     }
