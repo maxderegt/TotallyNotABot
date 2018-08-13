@@ -46,9 +46,11 @@ namespace TotallyNotABot.commands
                 return;
             }
 
-            audio.Enqueue(audio.SearchList[number - 1]);
+            audio.Add(audio.SearchList[number - 1]);
+            audio.PlayCurrent();
             await ctx.RespondAsync($"Added to queue");
-            await ctx.RespondAsync($"{string.Join("\n", audio.QueueList)}");
+            await ctx.RespondAsync(audio.Current.ToString());
+
             if (audio.ffmpeg == null || audio.ffmpeg.HasExited)
             {
                 audio.CheckQueue();

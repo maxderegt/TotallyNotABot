@@ -15,21 +15,31 @@ namespace TotallyNotABot.audio
         // List tracking songs resulting from the search command
         public List<Song> SearchList;
         // Queue of songs currently playing
-        public Queue<Song> QueueList;
+        public Playlist Current;
+
+        public bool IsPlaying { get; set; }
 
         public Process ffmpeg { get; set; }
 
         public Audio()
         {
             SearchList = new List<Song>();
-            QueueList = new Queue<Song>();
+            Current = new Playlist();
         }
 
-        public void Enqueue(Song song)
+        /// <summary>
+        /// Add a song to the currently playing songs
+        /// </summary>
+        /// <param name="song"></param>
+        public void Add(Song song)
         {
-            QueueList.Enqueue(song);
+            Current.Add(song, false);
         }
 
+        /// <summary>
+        /// Set the seachlist based on youtube search results
+        /// </summary>
+        /// <param name="videos"></param>
         public void Searched(IReadOnlyList<Video> videos)
         {
             this.SearchList.Clear();
@@ -39,8 +49,36 @@ namespace TotallyNotABot.audio
             }
         }
 
+        /// <summary>
+        /// Play songs in the current list or keep playing if it already is
+        /// </summary>
+        public void PlayCurrent()
+        {
+            if (ffmpeg == null || ffmpeg.HasExited)
+            {
+                IsPlaying = true;
+                Play();
+            }
+            else
+            {
+                Console.Error.WriteLine("ffmpeg is already running!");
+            }
+        }
 
+        private void Play()
+        {
+            while (IsPlaying)
+            {
+                if (Commands.Connection == null) {
+                    return;
+                }
 
+                if (Current.Songs.Count > 0)
+                {
+
+                }
+            }
+        }
 
         public void CheckQueue()
         {
