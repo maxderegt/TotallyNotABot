@@ -50,15 +50,6 @@ namespace TotallyNotABot.commands
             audio.PlayCurrent();
             await ctx.RespondAsync($"Added to queue");
             await ctx.RespondAsync(audio.Current.ToString());
-
-            if (audio.ffmpeg == null || audio.ffmpeg.HasExited)
-            {
-                audio.CheckQueue();
-            }
-            else
-            {
-                Console.Error.WriteLine("ffmpeg is already running!");
-            }
         }
     }
 }
