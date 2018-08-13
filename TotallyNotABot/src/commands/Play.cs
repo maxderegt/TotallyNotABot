@@ -8,7 +8,6 @@ namespace TotallyNotABot.commands
 {
     class Play
     {
-
         /// <summary>
         /// Validate the input given by the user
         /// </summary>
@@ -47,7 +46,7 @@ namespace TotallyNotABot.commands
             }
 
             audio.Add(audio.SearchList[number - 1]);
-            audio.PlayCurrent();
+            audio.Start();
             await ctx.RespondAsync($"Added to queue");
             await ctx.RespondAsync(audio.Current.ToString());
         }

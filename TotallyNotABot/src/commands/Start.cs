@@ -8,13 +8,9 @@ namespace TotallyNotABot.commands
     {
         public async Task RunCommand(CommandContext ctx, Audio audio)
         {
-            if (audio.ffmpeg == null)
+            if (audio.ffmpeg == null || audio.ffmpeg.HasExited)
             {
-                audio.CheckQueue();
-            }
-            else if (audio.ffmpeg.HasExited)
-            {
-                audio.CheckQueue();
+                audio.Start();
             }
             else
             {

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using TotallyNotABot.audio;
 using YoutubeExplode;
-using YoutubeExplode.Models;
 
 namespace TotallyNotABot.commands
 {
@@ -45,7 +43,7 @@ namespace TotallyNotABot.commands
                 audio.DownloadVideo(1);
                 try
                 {
-                    audio.PlayAudio();
+                    audio.Start();
                 }
                 catch (Exception e)
                 {

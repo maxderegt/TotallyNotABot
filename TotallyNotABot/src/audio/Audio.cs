@@ -18,6 +18,7 @@ namespace TotallyNotABot.audio
         public Playlist Current;
 
         public bool IsPlaying { get; set; }
+        public bool Repeat { get; set; }
 
         public Process ffmpeg { get; set; }
 
@@ -25,6 +26,7 @@ namespace TotallyNotABot.audio
         {
             SearchList = new List<Song>();
             Current = new Playlist();
+            Repeat = false;
         }
 
         /// <summary>
@@ -48,15 +50,14 @@ namespace TotallyNotABot.audio
                 this.SearchList.Add(new Song(video));
             }
         }
-
+        
         /// <summary>
-        /// Play songs in the current list or keep playing if it already is
+        /// Start playing the current playlist
         /// </summary>
-        public void PlayCurrent()
+        public void Start()
         {
             if (ffmpeg == null || ffmpeg.HasExited)
             {
-                IsPlaying = true;
                 Play();
             }
             else
@@ -65,49 +66,67 @@ namespace TotallyNotABot.audio
             }
         }
 
-        private void Play()
+        /// <summary>
+        /// Continues loop running when playing
+        /// </summary>
+        /// <param name="isPlaying"></param>
+        private void Play(bool isPlaying = true)
         {
+            IsPlaying = isPlaying;
+
             while (IsPlaying)
             {
-                if (Commands.Connection == null) {
-                    return;
+                // We can't play without songs.
+                if (Commands.Connection == null || Current.Songs.Count <= 0) {
+                    Stop();
                 }
 
-                if (Current.Songs.Count > 0)
+                // Get the next song and play it.
+                Song song = Current.Next();
+                if (song == null) continue;
+                PlaySong(song);
+                // TODO: not this! XD
+                Current.Index = 0;
+                if (!Repeat)
                 {
-                    Song 
+                    Stop();
                 }
             }
         }
 
-        public void CheckQueue()
+        /// <summary>
+        /// Download and play a single song
+        /// </summary>
+        /// <param name="song"></param>
+        private void PlaySong(Song song)
         {
-            if (Commands.Connection == null) return;
-            if (QueueList.Count > 0)
+            // Download the song
+            DownloadUrl(song.Url);
+            // Set the discord status
+            DiscordGame game = new DiscordGame
             {
-                Song song = QueueList.Dequeue();
-                DownloadUrl(song.Url);
-                DiscordGame test = new DiscordGame
-                {
-                    Name = song.Title,
-                    Details = "",
-                    State = "playing music"
-                };
-                Commands.Discord.UpdateStatusAsync(game: test);
+                Name = song.Title,
+                Details = "",
+                State = "Playing music"
+            };
+            Commands.Discord.UpdateStatusAsync(game: game);
 
-                try
-                {
-                    PlayAudio();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
-            else
+            try
             {
-                Commands.Discord.UpdateStatusAsync(null);
+                PlayAudio();
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            // Reset the discord status
+            Commands.Discord.UpdateStatusAsync();
+        }
+
+        public void Stop()
+        {
+            IsPlaying = false;
         }
 
         public async void DownloadUrl(string url)
@@ -132,7 +151,10 @@ namespace TotallyNotABot.audio
             DownloadUrl(SearchList[number -1].Url);
         }
 
-        public async void PlayAudio()
+        /// <summary>
+        /// Play a downloaded video
+        /// </summary>
+        private async void PlayAudio()
         {
             // WTF is this?!
             string file = VideoFile;
@@ -147,6 +169,7 @@ namespace TotallyNotABot.audio
                 }
             }
 
+            // Start ffmpeg
             ProcessStartInfo psi = new ProcessStartInfo
             {
                 FileName = "ffmpeg",
@@ -161,8 +184,8 @@ namespace TotallyNotABot.audio
             }
             Stream ffout = ffmpeg.StandardOutput.BaseStream;
 
+            // Play the audio
             byte[] buff = new byte[3840];
-
             try
             {
                 int br;
@@ -217,7 +240,6 @@ namespace TotallyNotABot.audio
             {
                 // we're not speaking anymore
                 await Commands.Connection.SendSpeakingAsync(false);
-                CheckQueue();
             }
             catch (Exception ex)
             {
