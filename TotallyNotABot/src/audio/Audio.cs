@@ -15,7 +15,6 @@ namespace TotallyNotABot.audio
         // List tracking songs resulting from the search command
         public List<Song> SearchList;
         // Queue of songs currently playing
-        public Playlist Current;
 
         public bool IsPlaying { get; set; }
 
@@ -24,16 +23,6 @@ namespace TotallyNotABot.audio
         public Audio()
         {
             SearchList = new List<Song>();
-            Current = new Playlist();
-        }
-
-        /// <summary>
-        /// Add a song to the currently playing songs
-        /// </summary>
-        /// <param name="song"></param>
-        public void Add(Song song)
-        {
-            Current.Add(song, false);
         }
 
         /// <summary>
@@ -69,13 +58,21 @@ namespace TotallyNotABot.audio
         {
             while (IsPlaying)
             {
-                if (Commands.Connection == null) {
-                    return;
+                if (Commands.Connection == null)
+                {
+                    IsPlaying = false;
+                    break;
                 }
 
                 if (Current.Songs.Count > 0)
                 {
-                    Song 
+                    Song song = Current.Next();
+                    if (song == null)
+                    {
+                        IsPlaying = false;
+                        break;
+                    }
+
                 }
             }
         }
@@ -110,22 +107,7 @@ namespace TotallyNotABot.audio
             }
         }
 
-        public async void DownloadUrl(string url)
-        {
-            // starting point for YouTube actions
-            YouTube youTube = YouTube.Default;
-            // gets a Video object with info about the video
-            YouTubeVideo video = youTube.GetVideo(url);
-
-            try
-            {
-                await File.WriteAllBytesAsync(VideoFile, video.GetBytes());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
+        
 
         public void DownloadVideo(int number)
         {

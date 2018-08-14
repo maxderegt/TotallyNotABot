@@ -13,9 +13,9 @@ namespace TotallyNotABot.commands
         /// Validate the input given by the user
         /// </summary>
         /// <param name="ctx"></param>
-        /// <param name="audio"></param>
+        /// <param name="player"></param>
         /// <returns>the number passed by the user or -1 if it is invalid</returns>
-        private async Task<int> CheckMessage(CommandContext ctx, Audio audio)
+        private async Task<int> CheckMessage(CommandContext ctx, Player player)
         {
             string[] msg = ctx.Message.Content.Split(" ");
             // Length of the message
@@ -25,7 +25,7 @@ namespace TotallyNotABot.commands
             }
             string command = msg[1];
             // The search command has to have been called before
-            if (audio.SearchList.Count < 0) {
+            if (player.HasSearch()) {
                 await ctx.RespondAsync($"Please use the command !search [name of a song] first");
                 return -1;
             }
@@ -39,17 +39,17 @@ namespace TotallyNotABot.commands
             return -1;
         }
 
-        public async Task RunCommand(CommandContext ctx, Audio audio)
+        public async Task RunCommand(CommandContext ctx, Player player)
         {
-            int number = await this.CheckMessage(ctx, audio);
+            int number = await this.CheckMessage(ctx, player);
             if (number == -1) {
                 return;
             }
 
-            audio.Add(audio.SearchList[number - 1]);
-            audio.PlayCurrent();
+            player.Add(number - 1);
+            player.Play();
             await ctx.RespondAsync($"Added to queue");
-            await ctx.RespondAsync(audio.Current.ToString());
+            await ctx.RespondAsync(player.Current.ToString());
         }
     }
 }
