@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -28,8 +29,18 @@ namespace TotallyNotABot.audio
                 return null;
             }
 
+            if (Index > 0)
+            {
+                PlaylistSong previous = Songs[Index - 1];
+                if (!previous.Keep)
+                {
+                    Songs.Remove(previous);
+                    Index--;
+                }
+            }
+
             PlaylistSong target = Songs[Index];
-            // Increase the index
+                // Increase the index
             Index++;
             return target.Song;
         }
