@@ -46,9 +46,8 @@ namespace TotallyNotABot.commands
             }
 
             player.Add(number - 1);
-            player.Play();
-            await ctx.RespondAsync($"Added to queue");
             await ctx.RespondAsync(player.Current.ToString());
+            player.Play();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace TotallyNotABot.audio
 {
@@ -51,8 +52,19 @@ namespace TotallyNotABot.audio
 
         public override string ToString()
         {
-            // TODO: implement!
-            return "";
+            StringBuilder builder = new StringBuilder("Current playlist \n");
+            for (int i = 0; i < Songs.Count; i++)
+            {
+                PlaylistSong song = Songs[i];
+                builder.Append($"{i + 1}: {song.Song.Title}");
+                if (i == Index)
+                {
+                    builder.Append(" - Currently playing!");
+                }
+
+                builder.Append("\n");
+            }
+            return builder.ToString();
         }
     }
 }

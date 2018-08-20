@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TotallyNotABot.commands;
 using YoutubeExplode.Models;
 
 namespace TotallyNotABot.audio
 {
     class Player
     {
-        private Audio2 audio;
+        private Audio audio;
         private Source source;
         public Playlist Current;
 
@@ -31,7 +32,7 @@ namespace TotallyNotABot.audio
 
         public Player()
         {
-            audio = new Audio2();
+            audio = new Audio();
             source = new Source();
             Current = new Playlist();
         }
