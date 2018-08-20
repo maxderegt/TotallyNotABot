@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DSharpPlus.Entities;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TotallyNotABot.commands;
@@ -54,9 +55,9 @@ namespace TotallyNotABot.audio
             }
         }
 
-        public void Searched(IReadOnlyList<Video> videos)
+        public List<Song> Searched(IReadOnlyList<Video> videos)
         {
-            source.Searched(videos);
+            return source.Searched(videos);
         }
 
         public void Play()
@@ -74,10 +75,11 @@ namespace TotallyNotABot.audio
         }
 
 
-        public void Stop()
+        public async void Stop()
         {
             if (IsPlaying)
             {
+                await commands.Commands.Discord.UpdateStatusAsync(null);
                 try
                 {
                     audio.ffmpeg.Kill();
@@ -101,6 +103,14 @@ namespace TotallyNotABot.audio
                     Stop();
                     return;
                 }
+
+                DiscordGame test = new DiscordGame
+                {
+                    Name = song.Title,
+                    Details = "",
+                    State = "playing music"
+                };
+                await commands.Commands.Discord.UpdateStatusAsync(game: test);
 
                 await audio.StreamAudio(await source.DownloadSong(song));
             }
