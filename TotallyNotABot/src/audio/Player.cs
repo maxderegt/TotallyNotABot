@@ -74,22 +74,24 @@ namespace TotallyNotABot.audio
             return source.SearchList.Count > 0;
         }
 
+        public void Next()
+        {
+            Stop();
+            Play();
+        }
 
         public async void Stop()
         {
-            if (IsPlaying)
+            await commands.Commands.Discord.UpdateStatusAsync(null);
+            try
             {
-                await commands.Commands.Discord.UpdateStatusAsync(null);
-                try
-                {
-                    audio.ffmpeg.Kill();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-                IsPlaying = false;
+                audio.ffmpeg.Kill();
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            IsPlaying = false;
         }
 
         private async void Loop()
@@ -101,6 +103,7 @@ namespace TotallyNotABot.audio
                 {
                     // TODO: reached end of playlist, loop if set
                     Stop();
+                    Current.Clear();
                     return;
                 }
 

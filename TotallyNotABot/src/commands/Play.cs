@@ -46,8 +46,8 @@ namespace TotallyNotABot.commands
             }
 
             player.Add(number - 1);
-            await ctx.RespondAsync(player.Current.ToString());
             player.Play();
+            await ctx.RespondAsync(player.Current.ToString());
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace TotallyNotABot.audio
@@ -27,27 +28,18 @@ namespace TotallyNotABot.audio
                 return null;
             }
 
-            // Return the song if it can be kept
             PlaylistSong target = Songs[Index];
-            if (target.Keep)
-            {
-                // Increase the index
-                Index++;
-                return target.Song;
-            }
-
-            // Remove the song from the list and return it if it can't be kept
-            // Don't increase the index, because a song was removed.
-            List<PlaylistSong> temp = new List<PlaylistSong>(Songs.Count - 1);
-            for (int i = 0; i < Songs.Count; i++)
-            {
-                if (i != Index)
-                {
-                    temp.Add(Songs[i]);
-                }
-            }
-            Songs = temp;
+            // Increase the index
+            Index++;
             return target.Song;
+        }
+
+        /// <summary>
+        /// Remove any songs where keep == false
+        /// </summary>
+        public void Clear()
+        {
+            Songs = Songs.Where(song => song.Keep).ToList();
         }
 
         public override string ToString()
@@ -57,7 +49,7 @@ namespace TotallyNotABot.audio
             {
                 PlaylistSong song = Songs[i];
                 builder.Append($"{i + 1}: {song.Song.Title}");
-                if (i == Index)
+                if (i == Index - 1)
                 {
                     builder.Append(" - Currently playing!");
                 }

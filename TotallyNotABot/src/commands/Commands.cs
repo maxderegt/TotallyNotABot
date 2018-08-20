@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.VoiceNext;
 using TotallyNotABot.audio;
+using TotallyNotABot.src.commands;
 
 namespace TotallyNotABot.commands
 {
@@ -22,6 +23,7 @@ namespace TotallyNotABot.commands
         private static Join _joinCommand;
         private static Spam _spamCommand;
         private static Leave _leaveCommand;
+        private static Next _nextCommand;
 
         // Other stuff
 //        private static Audio _audio;
@@ -41,8 +43,14 @@ namespace TotallyNotABot.commands
             _joinCommand = new Join();
             _spamCommand = new Spam();
             _leaveCommand = new Leave();
+            _nextCommand = new Next();
         }
 
+        [Command("next")]
+        public async Task Next(CommandContext ctx)
+        {
+            await _nextCommand.RunCommand(ctx, _player);
+        }
 
         [Command("search")]
         public async Task Search(CommandContext ctx)
