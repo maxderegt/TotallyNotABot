@@ -74,13 +74,14 @@ namespace TotallyNotABot.audio
             return source.SearchList.Count > 0;
         }
 
-        public void Next()
+        public async void Next()
         {
-            Stop();
+            await Stop();
+            IsPlaying = true;
             Play();
         }
 
-        public async void Stop()
+        public async Task Stop()
         {
             await commands.Commands.Discord.UpdateStatusAsync(null);
             try
@@ -102,7 +103,7 @@ namespace TotallyNotABot.audio
                 if (song == null)
                 {
                     // TODO: reached end of playlist, loop if set
-                    Stop();
+                    await Stop();
                     Current.Clear();
                     return;
                 }
