@@ -85,6 +85,7 @@ namespace TotallyNotABot.commands
         {
             await _stopCommand.RunCommand(ctx, _player);
             await _leaveCommand.RunCommand(ctx, Connection);
+            Connection = null;
         }
     }
 }

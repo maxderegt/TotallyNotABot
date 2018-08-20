@@ -19,13 +19,14 @@ namespace TotallyNotABot.audio
             SearchList = new List<Song>();
         }
 
-        public void Searched(IReadOnlyList<Video> videos)
+        public List<Song> Searched(IReadOnlyList<Video> videos)
         {
             this.SearchList.Clear();
-            foreach (Video video in videos)
+            for (int i = 0; i < 5; i++)
             {
-                this.SearchList.Add(new Song(video));
+                this.SearchList.Add(new Song(videos[i]));
             }
+            return SearchList;
         }
 
         public async Task<string> DownloadSong(Song song)

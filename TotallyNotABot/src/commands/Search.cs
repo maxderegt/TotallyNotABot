@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using TotallyNotABot.audio;
@@ -34,8 +36,14 @@ namespace TotallyNotABot.commands
 
             // Get the youtube videos
             YoutubeClient client = new YoutubeClient();
-            player.Searched(await client.SearchVideosAsync(input, 1));
-
+            List<Song> list = player.Searched(await client.SearchVideosAsync(input, 1));
+            StringBuilder builder = new StringBuilder("Current playlist");
+            for (int i = 0; i < list.Count; i++)
+            {
+                Song song = list[i];
+                builder.Append($"@\n{i+1}: {song.Title}");
+            }
+            await ctx.RespondAsync(builder.ToString());
             // Play the song if the play flag was set
             if (play)
             {
