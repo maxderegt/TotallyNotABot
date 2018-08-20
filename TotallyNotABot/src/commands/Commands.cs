@@ -73,7 +73,18 @@ namespace TotallyNotABot.commands
         [Command("play")]
         public async Task Play(CommandContext ctx)
         {
-            await _playCommand.RunCommand(ctx, _player);
+            if(Connection == null)
+            {
+                Connection = await _joinCommand.RunCommand(ctx, _player, Connection, Voice);
+            }
+            if (Connection != null)
+            {
+                await _playCommand.RunCommand(ctx, _player);
+            }
+            else
+            {
+                await ctx.RespondAsync("Can't join channel");
+            }
         }
 
         [Command("stop")]
