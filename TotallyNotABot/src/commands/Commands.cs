@@ -24,13 +24,14 @@ namespace TotallyNotABot.commands
         private static Leave _leaveCommand;
 
         // Other stuff
-        private static Audio _audio;
+//        private static Audio _audio;
+        private static Player _player;
 
         public static void Init(DiscordClient client, VoiceNextClient voice)
         {
             Discord = client;
             Voice = voice;
-            _audio = new Audio();
+            _player = new Player();
 
             // Commands
             _searchCommand = new Search();
@@ -46,7 +47,7 @@ namespace TotallyNotABot.commands
         [Command("search")]
         public async Task Search(CommandContext ctx)
         {
-            await _searchCommand.RunCommand(ctx, _audio);
+            await _searchCommand.RunCommand(ctx, _player);
         }
 
         [Command("spam")]
@@ -58,31 +59,31 @@ namespace TotallyNotABot.commands
         [Command("start")]
         public async Task Start(CommandContext ctx)
         {
-            await _startCommand.RunCommand(ctx, _audio);
+            _startCommand.RunCommand(ctx, _player);
         }
 
         [Command("play")]
         public async Task Play(CommandContext ctx)
         {
-            await _playCommand.RunCommand(ctx, _audio);
+            await _playCommand.RunCommand(ctx, _player);
         }
 
         [Command("stop")]
         public async Task Stop(CommandContext ctx)
         {
-            await _stopCommand.RunCommand(ctx, _audio);
+            await _stopCommand.RunCommand(ctx, _player);
         }
 
         [Command("join")]
         public async Task Join(CommandContext ctx)
         {
-            Connection = await _joinCommand.RunCommand(ctx, _audio, Connection, Voice);
+            Connection = await _joinCommand.RunCommand(ctx, _player, Connection, Voice);
         }
 
         [Command("leave")]
         public async Task Leave(CommandContext ctx)
         {
-            await _stopCommand.RunCommand(ctx, _audio);
+            await _stopCommand.RunCommand(ctx, _player);
             await _leaveCommand.RunCommand(ctx, Connection);
         }
     }

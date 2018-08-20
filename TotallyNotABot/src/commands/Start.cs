@@ -6,16 +6,9 @@ namespace TotallyNotABot.commands
 {
     class Start
     {
-        public async Task RunCommand(CommandContext ctx, Audio audio)
+        public void RunCommand(CommandContext ctx, Player player)
         {
-            if (audio.ffmpeg == null || audio.ffmpeg.HasExited)
-            {
-                audio.Start();
-            }
-            else
-            {
-                await ctx.RespondAsync("Music is already being played");
-            }
+            player.Play();
         }
     }
 }

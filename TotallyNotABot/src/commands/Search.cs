@@ -8,7 +8,7 @@ namespace TotallyNotABot.commands
 {
     class Search
     {
-        public async Task RunCommand(CommandContext ctx, Audio audio)
+        public async Task RunCommand(CommandContext ctx, Player player)
         {
             // Parse user input    
             string[] msg = ctx.Message.Content.Split(" ");
@@ -34,24 +34,12 @@ namespace TotallyNotABot.commands
 
             // Get the youtube videos
             YoutubeClient client = new YoutubeClient();
-            audio.Searched(await client.SearchVideosAsync(input, 1));
+            player.Searched(await client.SearchVideosAsync(input, 1));
 
-            // Respond to the user
+            // Play the song if the play flag was set
             if (play)
             {
-                // Download the video
-                audio.DownloadVideo(1);
-                try
-                {
-                    audio.Start();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                    return;
-                }
-                await ctx.RespondAsync($"{string.Join("\n", audio.SearchList)}");
-
+                player.Play();
             }
         }
     }

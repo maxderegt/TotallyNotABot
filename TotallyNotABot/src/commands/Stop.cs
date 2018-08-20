@@ -7,16 +7,9 @@ namespace TotallyNotABot.commands
 {
     class Stop
     {
-        public async Task RunCommand(CommandContext ctx, Audio audio)
+        public async Task RunCommand(CommandContext ctx, Player player)
         {
-            try
-            {
-                audio.ffmpeg.Kill();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            player.Stop();
             await ctx.RespondAsync($"👌");
         }
     }
