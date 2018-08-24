@@ -1,6 +1,6 @@
 language: csharp
 solution: TotallyNotABot.sln
-dotnet: 2.0.7
+dotnet: 2.1.202
 
 jobs:
   inclulde:
