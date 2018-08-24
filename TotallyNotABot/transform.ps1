@@ -1,4 +1,4 @@
-Set-Location -Path 'C:\Users\maxde\Source\Repos\TotallyNotABot\TotallyNotABot'
+Set-Location -Path '.'
 dotnet clean -c Release
 dotnet restore
 dotnet build -c Release -f netcoreapp2.0
