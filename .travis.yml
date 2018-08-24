@@ -5,12 +5,12 @@ dotnet: 2.0.7
 jobs:
   inclulde:
     - stage: build
-        script:
-          - dotnet --version
-          - dotnet clean -c Release
-          - dotnet restore
-          - dotnet build -c Release -f netcoreapp2.0
-          - dotnet publish -c Release -f netcoreapp2.0 -r ubuntu.16.10-x64
+      script:
+        - dotnet --version
+        - dotnet clean -c Release
+        - dotnet restore
+        - dotnet build -c Release -f netcoreapp2.0
+        - dotnet publish -c Release -f netcoreapp2.0 -r ubuntu.16.10-x64
     - stage: deploy
       script: 
         - echo "deploy stage has nothing yet..."
