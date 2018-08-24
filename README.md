@@ -1,3 +1,6 @@
+#
+[![Build Status](https://travis-ci.com/maxderegt/TotallyNotABot.svg?token=h8FRpdiLxjgTyZfnf9qJ&branch=master)](https://travis-ci.com/maxderegt/TotallyNotABot)
+
 # TotallyNotABot
 
 setup is a pain...
