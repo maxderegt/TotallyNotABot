@@ -2,16 +2,18 @@ language: csharp
 solution: TotallyNotABot.sln
 dotnet: 2.1.202
 
-jobs:
-  inclulde:
-    - stage: build
-      script:
-        - dotnet --version
-        - dotnet clean -c Release
-        - dotnet restore
-        - dotnet build -c Release -f netcoreapp2.0
-        - dotnet publish -c Release -f netcoreapp2.0 -r ubuntu.16.10-x64
-    - stage: deploy
-      script: 
-        - echo "deploy stage has nothing yet..."
-        
+script:
+  - dotnet --version
+  - dotnet clean -c Release
+  - dotnet restore
+  - dotnet build -c Release -f netcoreapp2.0
+  - dotnet publish -c Release -f netcoreapp2.0 -r ubuntu.16.10-x64
+  - echo "Starting deployment..."
+  # Setup ssh keys
+  - ssh-add $DeploymentPrivateKey
+  # zip build folder and copy to server
+  - tar -czvf build.tar.gz ./TotallyNotABot/bin/Release/ubuntu.16.10-64x/publish
+  - scp build.tar.gz discordbot@82.101.213.207:/home/max/Documents/totallynotabot/bin
+  # unzip build folder on server
+  - ssh discordbot@82.101.213.207 cd /home/max/Documents/totallynotabot/bin && tar -xzvf build.tar.gz
+  - ssh discordbot@82.101.213.207 chmod +x /home/max/Documents/totallynotabot/bin/TotallyNotABot
