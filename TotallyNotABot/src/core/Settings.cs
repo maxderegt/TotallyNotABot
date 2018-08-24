@@ -15,7 +15,7 @@ namespace TotallyNotABot.core
 
     class Settings
     {
-        public static string SettingsFile = "discordbot\\settings.xml";
+        public static string SettingsFile = "discordbot/settings.xml";
         public static string Token { get; set; }
         public static string Prefix { get; set; }
 
