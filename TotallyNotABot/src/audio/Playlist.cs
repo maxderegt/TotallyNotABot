@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Xml.Serialization;
 using System.Text;
+using System.Xml;
+using TotallyNotABot.commands;
 
 namespace TotallyNotABot.audio
 {
     class Playlist
     {
+        [XmlAttribute]
         public List<PlaylistSong> Songs { get; private set; }
 
         public int Index { get; set; }
@@ -53,8 +58,30 @@ namespace TotallyNotABot.audio
             Songs = Songs.Where(song => song.Keep).ToList();
         }
 
+        public void ToXml()
+        {
+            XmlDocument doc = new XmlDocument();
+            foreach (PlaylistSong song in Songs)
+            {
+                XmlElement songElement = (XmlElement) doc.AppendChild(doc.CreateElement("song"));
+                XmlElement idElement = (XmlElement) doc.CreateElement("id");
+                idElement.InnerText = song.Song.Id;
+                songElement.AppendChild(idElement);
+                XmlElement titleElemt = doc.CreateElement("title");
+                titleElemt.InnerText = song.Song.Title;
+                songElement.AppendChild(titleElemt);
+            }
+
+            if (File.Exists("playList.xml"))
+            {
+                File.Delete("playList.xml");
+            }
+            File.WriteAllText("playList.xml", doc.OuterXml);
+        }
+
         public override string ToString()
         {
+            ToXml();
             StringBuilder builder = new StringBuilder("Current playlist \n");
             for (int i = 0; i < Songs.Count; i++)
             {
