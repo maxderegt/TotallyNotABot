@@ -1,0 +1,2 @@
+the .service file should go to:
+/etc/systemd/system/totallynotabot.service

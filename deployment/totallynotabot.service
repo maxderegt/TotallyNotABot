@@ -1,0 +1,10 @@
+[Unit]
+Description=Totally not a discord bot
+
+[Service]
+Type=simple
+ExecStart=/home/max/Documents/totallynotabot/bin/TotallyNotABot
+WorkingDirectory=/home/max/Documents/totallynotabot/bin/
+
+[Install]
+WantedBy=multi-user.target
