@@ -8,13 +8,18 @@ namespace TotallyNotABot.audio
     class Playlist
     {
         public List<PlaylistSong> Songs { get; private set; }
-
+        public string name { get; }
         public int Index { get; set; }
 
         public Playlist()
         {
             Index = 0;
             Songs = new List<PlaylistSong>();
+        }
+
+        public Playlist(string name)
+        {
+            this.name = name;
         }
 
         public void Add(Song song, bool keep = false)
@@ -56,14 +61,14 @@ namespace TotallyNotABot.audio
 
         public override string ToString()
         {
-            StringBuilder builder = new StringBuilder("Current playlist \n");
+            StringBuilder builder = new StringBuilder("__**Current playlist**__ \n");
             for (int i = 0; i < Songs.Count; i++)
             {
                 PlaylistSong song = Songs[i];
                 builder.Append($"{i + 1}: {song.Song.Title}");
                 if (i == Index - 1)
                 {
-                    builder.Append(" - Currently playing!");
+                    builder.Append(" - **Currently playing!**");
                 }
 
                 builder.Append("\n");

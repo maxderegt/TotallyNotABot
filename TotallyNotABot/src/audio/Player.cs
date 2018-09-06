@@ -10,7 +10,7 @@ namespace TotallyNotABot.audio
     class Player
     {
         private Audio audio;
-        private Source source;
+        public Source source;
         public Playlist Current;
 
         private bool _isPlaying;

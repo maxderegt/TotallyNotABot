@@ -24,6 +24,7 @@ namespace TotallyNotABot.commands
         private static Spam _spamCommand;
         private static Leave _leaveCommand;
         private static Next _nextCommand;
+        private static PlayList _playListCommand;
 
         // Other stuff
 //        private static Audio _audio;
@@ -44,6 +45,13 @@ namespace TotallyNotABot.commands
             _spamCommand = new Spam();
             _leaveCommand = new Leave();
             _nextCommand = new Next();
+            _playListCommand = new PlayList();
+        }
+
+        [Command("playlist")]
+        public async Task Playlist(CommandContext ctx)
+        {
+            await _playListCommand.RunCommand(ctx, _player);
         }
 
         [Command("next")]
