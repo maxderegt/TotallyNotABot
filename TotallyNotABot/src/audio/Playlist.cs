@@ -51,6 +51,7 @@ namespace TotallyNotABot.audio
         public void Clear()
         {
             Songs = Songs.Where(song => song.Keep).ToList();
+            Index = 0;
         }
 
         public override string ToString()
