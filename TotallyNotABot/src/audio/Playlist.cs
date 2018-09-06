@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TotallyNotABot.DiscordFormat;
 
 namespace TotallyNotABot.audio
 {
@@ -61,14 +62,15 @@ namespace TotallyNotABot.audio
 
         public override string ToString()
         {
-            StringBuilder builder = new StringBuilder("__**Current playlist**__ \n");
+            
+            StringBuilder builder = new StringBuilder(DiscordString.Bold("Current playlist\n").Underline().ToString());
             for (int i = 0; i < Songs.Count; i++)
             {
                 PlaylistSong song = Songs[i];
-                builder.Append($"{i + 1}: {song.Song.Title}");
+                builder.Append($"{DiscordString.Bold($"{i + 1}:")} {song.Song.Title}");
                 if (i == Index - 1)
                 {
-                    builder.Append(" - **Currently playing!**");
+                    builder.Append($" - {DiscordString.Bold("Currently playing!")}");
                 }
 
                 builder.Append("\n");
