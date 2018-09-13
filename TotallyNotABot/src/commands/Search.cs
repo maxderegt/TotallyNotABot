@@ -5,11 +5,20 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using TotallyNotABot.audio;
 using YoutubeExplode;
+using TotallyNotABot.DiscordFormat;
 
 namespace TotallyNotABot.commands
 {
     class Search
     {
+        public static async Task<List<Song>> DoSearch(string title, Player player)
+        {
+            // Get the youtube videos
+            YoutubeClient client = new YoutubeClient();
+            List<Song> list = player.Searched(await client.SearchVideosAsync(title, 1));
+            return list;
+        }
+
         public async Task RunCommand(CommandContext ctx, Player player)
         {
             // Parse user input    
@@ -34,14 +43,12 @@ namespace TotallyNotABot.commands
                 }
             }
 
-            // Get the youtube videos
-            YoutubeClient client = new YoutubeClient();
-            List<Song> list = player.Searched(await client.SearchVideosAsync(input, 1));
-            StringBuilder builder = new StringBuilder("Search results:");
+            List<Song> list = await DoSearch(input, player);
+            StringBuilder builder = new StringBuilder(DiscordString.Bold("Search results:").Underline().ToString());
             for (int i = 0; i < list.Count; i++)
             {
                 Song song = list[i];
-                builder.Append($"\n{i+1}: {song.Title}");
+                builder.Append($"\n{DiscordString.Bold($"{i+1}:")} {song.Title}");
             }
             await ctx.RespondAsync(builder.ToString());
             // Play the song if the play flag was set
