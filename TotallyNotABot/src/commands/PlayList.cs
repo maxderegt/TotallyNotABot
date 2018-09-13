@@ -57,40 +57,19 @@ namespace TotallyNotABot.src.commands
                     break;
             }
             return -1;
-
-
-            // The search command has to have been called before
-            if (!player.HasSearch())
-            {
-                await ctx.RespondAsync($"Please use the command !search [name of a song] first");
-                return -1;
-            }
-            // The message is a valid number
-            if (int.TryParse(command, out int number))
-            {
-                if (number >= 1 || number <= 5)
-                {
-                    return 1;
-                }
-            }
-            await ctx.RespondAsync($"Please pass a valid number between 1 and 5");
-            return -1;
         }
 
         private async Task<int> CheckForPlaylist()
         {
-            bool found = false;
+            int i = 0;
             foreach (Playlist playlist in playlists)
             {
                 if (playlist.name == msg[2])
-                    found = true;
+                    return i;
+                i++;
             }
-            if (found == false)
-            {
-                await ctx.RespondAsync("No playlist with that name");
-                return -1;
-            }
-            return 1;
+            await ctx.RespondAsync("No playlist with that name");
+            return -1;
         }
 
         private async Task Create()
@@ -113,7 +92,8 @@ namespace TotallyNotABot.src.commands
                 {
                     int i2 = 0;
                     int.TryParse(msg[3], out i2);
-                    list.Add(player.source.SearchList[i2]);
+                    if(player.HasSearch())
+                        list.Add(player.source.SearchList[i2-1]);
                 }
                 catch(Exception ex)
                 {
@@ -128,6 +108,35 @@ namespace TotallyNotABot.src.commands
             if (i != -1)
             {
                 Playlist list = playlists[i];
+                try
+                {
+                    try
+                    {
+                        int i2 = 0;
+                        int.TryParse(msg[3], out i2);
+                        list.Songs.RemoveAt(i2 - 1);
+                    }
+                    catch(Exception ex)
+                    {
+                        //TODO delete by string
+                        Console.WriteLine(ex);
+                        //Console.WriteLine("Number didn't work, trying string now");
+                        //try
+                        //{
+                        //    for (int i2 = 3; i2 < msg.Length; i2++) ;
+                        //}
+                        //catch (Exception ex2)
+                        //{
+                        //    Console.WriteLine(ex);
+                        //    await ctx.RespondAsync("Wrong format use: !playlist delete [playlist] [number/name of song]");
+                        //}
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    await ctx.RespondAsync("Wrong format use: !playlist delete [playlist] [number/name of song]");
+                }
 
             }
         }
@@ -137,6 +146,9 @@ namespace TotallyNotABot.src.commands
             if (i != -1)
             {
                 Playlist list = playlists[i];
+                await player.Stop();
+                player.Current = list;
+                player.Play();
             }
         }
         private async Task Show()

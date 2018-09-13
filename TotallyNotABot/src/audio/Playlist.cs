@@ -20,6 +20,8 @@ namespace TotallyNotABot.audio
         public Playlist(string name)
         {
             this.name = name;
+            Index = 0;
+            Songs = new List<PlaylistSong>();
         }
 
         public void Add(Song song, bool keep = false)

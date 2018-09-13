@@ -81,10 +81,7 @@ namespace TotallyNotABot.commands
         [Command("play")]
         public async Task Play(CommandContext ctx)
         {
-            if(Connection == null)
-            {
-                Connection = await _joinCommand.RunCommand(ctx, _player, Connection, Voice);
-            }
+            await join(ctx);
             if (Connection != null)
             {
                 await _playCommand.RunCommand(ctx, _player);
@@ -99,6 +96,14 @@ namespace TotallyNotABot.commands
         public async Task Stop(CommandContext ctx)
         {
             await _stopCommand.RunCommand(ctx, _player);
+        }
+        
+        public async static Task join(CommandContext ctx)
+        {
+            if (Connection == null)
+            {
+                Connection = await _joinCommand.RunCommand(ctx, _player, Connection, Voice);
+            }
         }
 
         [Command("join")]
