@@ -11,6 +11,14 @@ namespace TotallyNotABot.commands
 {
     class Search
     {
+        public static async Task<List<Song>> DoSearch(string title, Player player)
+        {
+            // Get the youtube videos
+            YoutubeClient client = new YoutubeClient();
+            List<Song> list = player.Searched(await client.SearchVideosAsync(title, 1));
+            return list;
+        }
+
         public async Task RunCommand(CommandContext ctx, Player player)
         {
             // Parse user input    
@@ -35,9 +43,7 @@ namespace TotallyNotABot.commands
                 }
             }
 
-            // Get the youtube videos
-            YoutubeClient client = new YoutubeClient();
-            List<Song> list = player.Searched(await client.SearchVideosAsync(input, 1));
+            List<Song> list = await DoSearch(input, player);
             StringBuilder builder = new StringBuilder(DiscordString.Bold("Search results:").Underline().ToString());
             for (int i = 0; i < list.Count; i++)
             {

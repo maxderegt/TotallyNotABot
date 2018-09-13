@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using TotallyNotABot.audio;
+using TotallyNotABot.core;
 
 namespace TotallyNotABot.commands
 {
@@ -14,40 +14,62 @@ namespace TotallyNotABot.commands
         /// <param name="ctx"></param>
         /// <param name="player"></param>
         /// <returns>the number passed by the user or -1 if it is invalid</returns>
-        private async Task<int> CheckMessage(CommandContext ctx, Player player)
+        private async Task<string> CheckMessage(CommandContext ctx, Player player)
         {
             string[] msg = ctx.Message.Content.Split(" ");
             // Length of the message
             if (msg.Length <= 1) {
                 await ctx.RespondAsync($"Please use the command !play [1-5] to select a song from the !search command");
-                return -1;
+                return "";
             }
-            string command = msg[1];
-            // The search command has to have been called before
-            if (!player.HasSearch()) {
-                await ctx.RespondAsync($"Please use the command !search [name of a song] first");
-                return -1;
-            }
-            // The message is a valid number
-            if (int.TryParse(command, out int number)) {
-                if (number >= 1 || number <= 5) {
-                    return number;
-                }
-            }
-            await ctx.RespondAsync($"Please pass a valid number between 1 and 5");
-            return -1;
+            // Get the commands content
+            int prefixSize = Settings.Prefix.Length;
+            string command = ctx.Message.Content.Substring(prefixSize + "play".Length);
+            
+            return command;
         }
 
         public async Task RunCommand(CommandContext ctx, Player player)
         {
-            int number = await this.CheckMessage(ctx, player);
-            if (number == -1) {
-                return;
+            bool added = false;
+            string command = await this.CheckMessage(ctx, player);
+            // The message is a valid number
+            if (int.TryParse(command, out int number))
+            {
+                if (number >= 1 || number <= 5)
+                {
+                    if (number == -1) {
+                        return;
+                    }
+
+                    added = player.Add(number - 1);
+                }
+                else
+                {
+                    await ctx.RespondAsync($"Please pass a valid number between 1 and 5");
+                }
+            }
+            else
+            {
+                added = player.Add(command);
             }
 
-            player.Add(number - 1);
-            player.Play();
-            await ctx.RespondAsync(player.Current.ToString());
+            if (!added)
+            {
+                List<Song> list = await Search.DoSearch(command, player);
+                added = player.Add(command);
+                player.source.SearchList.Clear();
+            }
+
+            if (added)
+            {
+                player.Play();
+                await ctx.RespondAsync(player.Current.ToString());
+            }
+            else
+            {
+                await ctx.RespondAsync($"The video \"{command}\" could not be found!");
+            }
         }
     }
 }

@@ -42,17 +42,39 @@ namespace TotallyNotABot.audio
         /// Add a song to the currently playing songs
         /// </summary>
         /// <param name="song"></param>
-        public void Add(Song song)
+        public bool Add(Song song)
         {
             Current.Add(song, false);
+            return true;
         }
 
-        public void Add(int index)
+        public bool Add(int index)
         {
             if (HasSearch())
             {
                 Add(source.SearchList[index]);
+                return true;
             }
+
+            return false;
+        }
+
+        public bool Add(string song)
+        {
+            if (HasSearch())
+            {
+                for (int i = 0; i < source.SearchList.Count; i++)
+                {
+                    Song current = source.SearchList[i];
+                    if (current.Title.ToLower().IndexOf(song.ToLower()) != -1)
+                    {
+                        Add(current);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public List<Song> Searched(IReadOnlyList<Video> videos)
