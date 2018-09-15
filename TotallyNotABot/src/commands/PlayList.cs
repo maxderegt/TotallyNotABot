@@ -48,6 +48,7 @@ namespace TotallyNotABot.src.commands
                     await Add();
                     break;
                 case "delete":
+                    await Delete();
                     break;
                 case "play":
                     await Play();
@@ -93,7 +94,7 @@ namespace TotallyNotABot.src.commands
                     int i2 = 0;
                     int.TryParse(msg[3], out i2);
                     if(player.HasSearch())
-                        list.Add(player.source.SearchList[i2-1]);
+                        list.Add(player.source.SearchList[i2-1], true);
                 }
                 catch(Exception ex)
                 {
@@ -146,6 +147,7 @@ namespace TotallyNotABot.src.commands
             if (i != -1)
             {
                 Playlist list = playlists[i];
+                list.Index = 0;
                 await player.Stop();
                 player.Current = list;
                 player.Play();
