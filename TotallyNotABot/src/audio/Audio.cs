@@ -1,84 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using DSharpPlus.Entities;
+using System.Threading.Tasks;
 using TotallyNotABot.commands;
-using VideoLibrary;
-using Video = YoutubeExplode.Models.Video;
 
 namespace TotallyNotABot.audio
 {
     class Audio
     {
-        public List<YoutubeExplode.Models.Video> List = new List<YoutubeExplode.Models.Video>();
-        public List<YoutubeExplode.Models.Video> PlayList = new List<YoutubeExplode.Models.Video>();
-        public Queue<YoutubeExplode.Models.Video> QueueList = new Queue<YoutubeExplode.Models.Video>();
-
         public Process ffmpeg { get; set; }
-        public static string VideoFile = "discordbot\\video.webm";
 
-        public Audio()
-        {
-        }
-
-        public void CheckQueue()
-        {
-            if (Commands.Connection == null) return;
-            if (QueueList.Count > 0)
-            {
-                Video video = QueueList.Dequeue();
-                DownloadUrl("https://www.youtube.com/watch?v=" + video.Id);
-                DiscordGame test = new DiscordGame
-                {
-                    Name = video.Title,
-                    Details = "",
-                    State = "playing music"
-                };
-                Commands.Discord.UpdateStatusAsync(game: test);
-                PlayAudio(VideoFile);
-            }
-            else
-            {
-                Commands.Discord.UpdateStatusAsync(null);
-            }
-        }
-
-        public async void DownloadUrl(string url)
-        {
-            // starting point for YouTube actions
-            YouTube youTube = YouTube.Default;
-            // gets a Video object with info about the video
-            YouTubeVideo video = youTube.GetVideo(url);
-
-            try
-            {
-                await File.WriteAllBytesAsync(VideoFile, video.GetBytes());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
-
-        public void PlayFromList(int number)
-        {
-            string url = "https://www.youtube.com/watch?v=" + List[number - 1].Id;
-            DownloadUrl(url);
-        }
-
-        public async void PlayAudio(string file)
+        public async Task StreamAudio(string file)
         {
             // send a speaking indicator
             await Commands.Connection.SendSpeakingAsync();
-            if (int.TryParse(file, out int number))
-            {
-                if (number > 0 && number < List.Count)
-                {
-                    PlayFromList(number);
-                    file = VideoFile;
-                }
-            }
 
             ProcessStartInfo psi = new ProcessStartInfo
             {
@@ -124,7 +59,6 @@ namespace TotallyNotABot.audio
                         buff[i * 2] = (byte)(sample & 0xff);
                     }
 
-
                     await Commands.Connection.SendAsync(buff, 20);
                 }
                 while ((br = ffout.Read(buff, 0, buff.Length)) > 0)
@@ -146,17 +80,8 @@ namespace TotallyNotABot.audio
                 Console.WriteLine(ex.Message);
             }
 
-            try
-            {
-                // we're not speaking anymore
-                await Commands.Connection.SendSpeakingAsync(false);
-                CheckQueue();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
+           // we're not speaking anymore
+            await Commands.Connection.SendSpeakingAsync(false);
         }
     }
 }

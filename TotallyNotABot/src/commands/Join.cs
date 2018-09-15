@@ -9,12 +9,12 @@ namespace TotallyNotABot.commands
 {
     class Join
     {
-        public async Task<VoiceNextConnection> RunCommand(CommandContext ctx, Audio audio, VoiceNextConnection connection, VoiceNextClient voice)
+        public async Task<VoiceNextConnection> RunCommand(CommandContext ctx, Player player, VoiceNextConnection connection, VoiceNextClient voice)
         {
             if (connection != null) return connection;
             try
             {
-                audio.ffmpeg.Kill();
+                player.Stop();
             }
             catch (Exception ex)
             {
@@ -22,7 +22,9 @@ namespace TotallyNotABot.commands
             }
             DiscordChannel channel = ctx.Member.VoiceState.Channel;
             if (channel == null)
-                Console.WriteLine("You need to be in a voice channel.");
+            {
+                await ctx.RespondAsync("You need to be in a voice channel.");
+            }
             else
             {
                 connection = await voice.ConnectAsync(channel);

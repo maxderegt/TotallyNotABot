@@ -1,18 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using TotallyNotABot.audio;
 using YoutubeExplode;
-using YoutubeExplode.Models;
+using TotallyNotABot.DiscordFormat;
 
 namespace TotallyNotABot.commands
 {
     class Search
     {
-        public async Task RunCommand(CommandContext ctx, Audio audio)
+        public static async Task<List<Song>> DoSearch(string title, Player player)
         {
-            audio.List.Clear();
+            // Get the youtube videos
+            YoutubeClient client = new YoutubeClient();
+            List<Song> list = player.Searched(await client.SearchVideosAsync(title, 1));
+            return list;
+        }
 
+        public async Task RunCommand(CommandContext ctx, Player player)
+        {
+            // Parse user input    
             string[] msg = ctx.Message.Content.Split(" ");
             string input = "";
             bool play = false;
@@ -33,17 +42,19 @@ namespace TotallyNotABot.commands
                     input = input + " " + msg[i];
                 }
             }
-            YoutubeClient client = new YoutubeClient();
-            IReadOnlyList<Video> temp = await client.SearchVideosAsync(input, 1);
-            for (int i = 0; i < 5; i++)
+
+            List<Song> list = await DoSearch(input, player);
+            StringBuilder builder = new StringBuilder(DiscordString.Bold("Search results:").Underline().ToString());
+            for (int i = 0; i < list.Count; i++)
             {
-                audio.List.Add(temp[i]);
+                Song song = list[i];
+                builder.Append($"\n{DiscordString.Bold($"{i+1}:")} {song.Title}");
             }
-            await ctx.RespondAsync($"{string.Join("\n", audio.List)}");
+            await ctx.RespondAsync(builder.ToString());
+            // Play the song if the play flag was set
             if (play)
             {
-                audio.PlayFromList(1);
-                audio.PlayAudio(Audio.VideoFile);
+                player.Play();
             }
         }
     }

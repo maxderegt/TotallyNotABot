@@ -23,11 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CliWrap" Version="2.0.0" />
     <PackageReference Include="DSharpPlus" Version="3.2.3" />
     <PackageReference Include="DSharpPlus.CommandsNext" Version="3.2.3" />
     <PackageReference Include="DSharpPlus.VoiceNext" Version="3.2.3" />
     <PackageReference Include="VideoLibrary" Version="2.0.0" />
-    <PackageReference Include="YoutubeExplode" Version="4.1.1" />
+    <PackageReference Include="YoutubeExplode" Version="4.3.2" />
+    <PackageReference Include="YoutubeExtractor" Version="0.10.11" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,5 +46,10 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
+<PropertyGroup>
+  <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
+</PropertyGroup>	
+
 
 </Project>
