@@ -7,6 +7,8 @@ namespace TotallyNotABot.PlayList
 {
     class Storage
     {
+        public static string BASE_DIR = "discordbot\\playlists";
+
         /// <summary>
         /// Create a json object from a playlist
         /// </summary>
@@ -80,7 +82,11 @@ namespace TotallyNotABot.PlayList
         /// <param name="playlist"></param>
         public static void SavePlayList(Playlist playlist)
         {
-            string path = $"discordbot\\{playlist.Name}.json";
+            if (!Directory.Exists(BASE_DIR))
+            {
+                Directory.CreateDirectory(BASE_DIR);
+            }
+            string path = $"{BASE_DIR}\\{playlist.Name}.json";
             if (!File.Exists(path))
             {
                 File.Delete(path);
@@ -100,7 +106,7 @@ namespace TotallyNotABot.PlayList
         /// <returns>The returned playlist may be null if it doesn't exist</returns>
         public static Playlist LoadPlaylist(string name)
         {
-            string path = $"discordbot\\{name}.json";
+            string path = $"{BASE_DIR}\\{name}.json";
             if (!File.Exists(path)) return null;
             string rawJson = File.ReadAllText(path);
             JObject root = JObject.Parse(rawJson);
