@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using TotallyNotABot.audio;
+using TotallyNotABot.PlayList;
 
-namespace TotallyNotABot.src.commands
+namespace TotallyNotABot.commands
 {
     class PlayList
     {
-        public List<Playlist> playlists = new List<Playlist>();
         public readonly List<string> commands = new List<string>(new string[] { "create", "add", "delete", "play", "show" });
         private CommandContext ctx;
         private Player player;
@@ -48,6 +47,7 @@ namespace TotallyNotABot.src.commands
                     await Add();
                     break;
                 case "delete":
+                    await Delete();
                     break;
                 case "play":
                     await Play();
@@ -62,9 +62,9 @@ namespace TotallyNotABot.src.commands
         private async Task<int> CheckForPlaylist()
         {
             int i = 0;
-            foreach (Playlist playlist in playlists)
+            foreach (Playlist playlist in Storage.PlayLists)
             {
-                if (playlist.name == msg[2])
+                if (playlist.Name == msg[2])
                     return i;
                 i++;
             }
@@ -80,20 +80,23 @@ namespace TotallyNotABot.src.commands
             }
             else
             {
-                playlists.Add(new Playlist(msg[2]));
+                Storage.PlayLists.Add(new Playlist(msg[2]));
             }
         }
         private async Task Add()
         {
             int i = await CheckForPlaylist();
             if (i != -1) { 
-                Playlist list = playlists[i];
+                Playlist list = Storage.PlayLists[i];
                 try
                 {
                     int i2 = 0;
                     int.TryParse(msg[3], out i2);
-                    if(player.HasSearch())
-                        list.Add(player.source.SearchList[i2-1]);
+                    if (player.HasSearch())
+                    {
+                        list.Add(player.source.SearchList[i2 - 1], true);
+                        Storage.SavePlayList(Storage.PlayLists[i]);
+                    }
                 }
                 catch(Exception ex)
                 {
@@ -107,7 +110,7 @@ namespace TotallyNotABot.src.commands
             int i = await CheckForPlaylist();
             if (i != -1)
             {
-                Playlist list = playlists[i];
+                Playlist list = Storage.PlayLists[i];
                 try
                 {
                     try
@@ -115,6 +118,7 @@ namespace TotallyNotABot.src.commands
                         int i2 = 0;
                         int.TryParse(msg[3], out i2);
                         list.Songs.RemoveAt(i2 - 1);
+                        Storage.SavePlayList(Storage.PlayLists[i]);
                     }
                     catch(Exception ex)
                     {
@@ -145,7 +149,8 @@ namespace TotallyNotABot.src.commands
             int i = await CheckForPlaylist();
             if (i != -1)
             {
-                Playlist list = playlists[i];
+                Playlist list = Storage.PlayLists[i];
+                list.Index = 0;
                 await player.Stop();
                 player.Current = list;
                 player.Play();
@@ -156,7 +161,7 @@ namespace TotallyNotABot.src.commands
             int i = await CheckForPlaylist();
             if (i != -1)
             {
-                Playlist list = playlists[i];
+                Playlist list = Storage.PlayLists[i];
                 await ctx.RespondAsync(list.ToString());
             }
         }

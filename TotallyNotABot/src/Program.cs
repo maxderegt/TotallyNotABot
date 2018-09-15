@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.VoiceNext;
+using TotallyNotABot.audio;
 using TotallyNotABot.commands;
 using TotallyNotABot.core;
+using TotallyNotABot.PlayList;
 
 namespace TotallyNotABot
 {
@@ -15,6 +18,9 @@ namespace TotallyNotABot
             if (!Settings.Load()) {
                 return;
             }
+
+            // After this method call all playLists are stored statically in the storage class.
+            Storage.LoadAllPlayLists();
 
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
