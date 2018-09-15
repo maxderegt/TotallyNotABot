@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using TotallyNotABot.audio;
+using TotallyNotABot.PlayList;
 
-namespace TotallyNotABot.src.commands
+namespace TotallyNotABot.commands
 {
     class PlayList
     {
@@ -64,7 +64,7 @@ namespace TotallyNotABot.src.commands
             int i = 0;
             foreach (Playlist playlist in playlists)
             {
-                if (playlist.name == msg[2])
+                if (playlist.Name == msg[2])
                     return i;
                 i++;
             }

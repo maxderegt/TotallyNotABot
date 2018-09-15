@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TotallyNotABot.audio;
 using TotallyNotABot.DiscordFormat;
 
-namespace TotallyNotABot.audio
+namespace TotallyNotABot.PlayList
 {
     class Playlist
     {
         public List<PlaylistSong> Songs { get; private set; }
-        public string name { get; }
+        public string Name { get; }
         public int Index { get; set; }
 
         public Playlist()
@@ -20,7 +21,7 @@ namespace TotallyNotABot.audio
 
         public Playlist(string name)
         {
-            this.name = name;
+            this.Name = name;
             Index = 0;
             Songs = new List<PlaylistSong>();
         }
@@ -28,6 +29,11 @@ namespace TotallyNotABot.audio
         public void Add(Song song, bool keep = false)
         {
             Songs.Add(new PlaylistSong(song, keep));
+        }
+
+        public void Add(PlaylistSong song)
+        {
+            Songs.Add(song);
         }
 
         public Song Next()

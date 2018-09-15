@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TotallyNotABot.commands;
 using YoutubeExplode.Models;
+using Playlist = TotallyNotABot.PlayList.Playlist;
 
 namespace TotallyNotABot.audio
 {

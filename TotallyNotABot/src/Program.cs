@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.VoiceNext;
+using TotallyNotABot.audio;
 using TotallyNotABot.commands;
 using TotallyNotABot.core;
+using TotallyNotABot.PlayList;
 
 namespace TotallyNotABot
 {
