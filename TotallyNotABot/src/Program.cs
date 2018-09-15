@@ -18,8 +18,9 @@ namespace TotallyNotABot
             if (!Settings.Load()) {
                 return;
             }
-            // This loads every playList in the playLists folder.
-            List<Playlist> playLists = Storage.LoadAllPlayLists();
+
+            // After this method call all playLists are stored statically in the storage class.
+            Storage.LoadAllPlayLists();
 
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }

@@ -9,6 +9,7 @@ namespace TotallyNotABot.PlayList
     class Storage
     {
         public static string BASE_DIR = "discordbot\\playlists";
+        public static List<Playlist> PlayLists = new List<Playlist>();
 
         /// <summary>
         /// Create a json object from a playlist
@@ -86,6 +87,7 @@ namespace TotallyNotABot.PlayList
                 playLists.Add(LoadPlaylist(name));
             }
 
+            PlayLists = playLists;
             return playLists;
         }
 
