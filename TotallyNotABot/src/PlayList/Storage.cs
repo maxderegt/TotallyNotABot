@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TotallyNotABot.audio;
@@ -63,6 +64,29 @@ namespace TotallyNotABot.PlayList
             }
 
             return playlist;
+        }
+
+        /// <summary>
+        /// Search the playlist directory for playLists and load them
+        /// </summary>
+        /// <returns>List of every playlist in the playLists directory</returns>
+        public static List<Playlist> LoadAllPlayLists()
+        {
+            List<Playlist> playLists = new List<Playlist>();
+
+            if (!Directory.Exists(BASE_DIR)) {
+                return playLists;
+            }
+
+            DirectoryInfo d = new DirectoryInfo(BASE_DIR);
+            FileInfo[] files = d.GetFiles("*.json");
+            foreach (FileInfo file in files)
+            {
+                string name = file.Name.Substring(0, file.Name.Length - 5);
+                playLists.Add(LoadPlaylist(name));
+            }
+
+            return playLists;
         }
 
         /// <summary>

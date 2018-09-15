@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -17,6 +18,8 @@ namespace TotallyNotABot
             if (!Settings.Load()) {
                 return;
             }
+            // This loads every playList in the playLists folder.
+            List<Playlist> playLists = Storage.LoadAllPlayLists();
 
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
