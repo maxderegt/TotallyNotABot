@@ -14,5 +14,11 @@ namespace TotallyNotABot.audio
             this.Title = youtubeVideo.Title;
             this.Id = youtubeVideo.Id;
         }
+
+        public Song(string title, string id)
+        {
+            this.Title = title;
+            this.Id = id;
+        }
     }
 }

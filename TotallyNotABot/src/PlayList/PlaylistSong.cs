@@ -1,4 +1,6 @@
-﻿namespace TotallyNotABot.audio
+﻿using TotallyNotABot.audio;
+
+namespace TotallyNotABot.PlayList
 {
     class PlaylistSong
     {
