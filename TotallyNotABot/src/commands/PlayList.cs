@@ -149,6 +149,7 @@ namespace TotallyNotABot.commands
             int i = await CheckForPlaylist();
             if (i != -1)
             {
+                await Commands.join(ctx);
                 Playlist list = Storage.PlayLists[i];
                 list.Index = 0;
                 await player.Stop();
