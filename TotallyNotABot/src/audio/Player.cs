@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TotallyNotABot.DiscordFormat;
 using YoutubeExplode.Models;
 using Playlist = TotallyNotABot.PlayList.Playlist;
 
@@ -142,13 +143,18 @@ namespace TotallyNotABot.audio
                     }
                 }
 
-                DiscordGame test = new DiscordGame
+                DiscordGame discordGame = new DiscordGame
                 {
                     Name = song.Title,
                     Details = "",
                     State = "playing music"
                 };
-                await commands.Commands.Discord.UpdateStatusAsync(game: test);
+                if (Current.Name != null)
+                {
+                    discordGame.Name = $"Song: {song.Title}, Playlist: {Current.Name}";
+                }
+
+                await commands.Commands.Discord.UpdateStatusAsync(game: discordGame);
 
                 await audio.StreamAudio(await source.DownloadSong(song));
             }
