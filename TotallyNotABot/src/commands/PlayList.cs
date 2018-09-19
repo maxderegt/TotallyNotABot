@@ -4,15 +4,20 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using TotallyNotABot.audio;
 using TotallyNotABot.PlayList;
+using TotallyNotABot.DiscordFormat;
 
 namespace TotallyNotABot.commands
 {
-    class PlayList
+    class PlayList : src.commands.BaseCommand
     {
         public readonly List<string> commands = new List<string>(new string[] { "create", "add", "delete", "play", "show" });
         private CommandContext ctx;
         private Player player;
         private string[] msg;
+
+        public PlayList(string name) : base(name)
+        {
+        }
 
         public async Task RunCommand(CommandContext ctx, Player player)
         {
@@ -81,6 +86,7 @@ namespace TotallyNotABot.commands
             else
             {
                 Storage.PlayLists.Add(new Playlist(msg[2]));
+                await ctx.RespondAsync("Created playlist: " + msg[2]);
             }
         }
         private async Task Add()
@@ -96,12 +102,13 @@ namespace TotallyNotABot.commands
                     {
                         list.Add(player.source.SearchList[i2 - 1], true);
                         Storage.SavePlayList(Storage.PlayLists[i]);
+                        await ctx.RespondAsync("Added song " + DiscordString.Bold(player.source.SearchList[i2 - 1].Title) + " to playlist " + DiscordString.Bold(list.Name) + "\n"+ list.ToString());
                     }
                 }
                 catch(Exception ex)
                 {
                     Console.WriteLine(ex);
-                    await ctx.RespondAsync("could not add song to playlist due to unknow error");
+                    await ctx.RespondAsync("Could not add song to playlist due to unknow error");
                 }
             }
         }
@@ -117,8 +124,10 @@ namespace TotallyNotABot.commands
                     {
                         int i2 = 0;
                         int.TryParse(msg[3], out i2);
+                        string name = list.Songs[i2 - 1].Song.Title;
                         list.Songs.RemoveAt(i2 - 1);
                         Storage.SavePlayList(Storage.PlayLists[i]);
+                        await ctx.RespondAsync("Deleted song " + DiscordString.Bold(name) + " from playlist " + DiscordString.Bold(list.Name));
                     }
                     catch(Exception ex)
                     {
@@ -155,6 +164,7 @@ namespace TotallyNotABot.commands
                 await player.Stop();
                 player.Current = list;
                 player.Play();
+                await ctx.RespondAsync("Playing playlist: " + list.Name);
             }
         }
         private async Task Show()
@@ -165,6 +175,16 @@ namespace TotallyNotABot.commands
                 Playlist list = Storage.PlayLists[i];
                 await ctx.RespondAsync(list.ToString());
             }
+        }
+
+        public override string Help()
+        {
+            return (DiscordString.Bold("Playlist: ") +
+                "\nUse !playlist create [name] to create a new playlist" +
+                "\nUse !playlist add [name of playlist] [number] to add a song from !search to a playlist" +
+                "\nUse !playlist delete [name of playlist] [number] to delete a song from the playlist" +
+                "\nUse !playlist play [name of playlist] to play a playlist"  +
+                "\nUse !playlist show to show the songs in a playlist");
         }
     }
 }

@@ -3,11 +3,16 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using TotallyNotABot.audio;
 using TotallyNotABot.core;
+using TotallyNotABot.src.commands;
 
 namespace TotallyNotABot.commands
 {
-    class Play
+    class Play : BaseCommand
     {
+        public Play(string name) : base(name)
+        {
+        }
+
         /// <summary>
         /// Validate the input given by the user
         /// </summary>
@@ -70,6 +75,11 @@ namespace TotallyNotABot.commands
             {
                 await ctx.RespondAsync($"The video \"{command}\" could not be found!");
             }
+        }
+
+        public override string Help()
+        {
+            return (DiscordFormat.DiscordString.Bold("Play: ") + "\nUse !play [1-5] to select a song from the !search command " + "\nUse !play [name of the song] to search and play a song");
         }
     }
 }

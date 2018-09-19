@@ -49,11 +49,13 @@ namespace TotallyNotABot
             CommandsNextModule commandsModule = discord.UseCommandsNext(new CommandsNextConfiguration
             {
                 StringPrefix = Settings.Prefix,
-                EnableDms = false
+                EnableDms = false,
+                EnableDefaultHelp = false
             });
 
             commandsModule.RegisterCommands<Commands>();
-            
+            commandsModule.CommandErrored += Commands.Commands_CommandErrored;
+
             await discord.ConnectAsync();
             await Task.Delay(-1);
         }
