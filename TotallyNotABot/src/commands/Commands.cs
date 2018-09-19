@@ -63,11 +63,6 @@ namespace TotallyNotABot.commands
         [Command("help")]
         public async Task Help(CommandContext ctx)
         {
-            var embedbuilder = new DiscordEmbedBuilder();
-            embedbuilder.Color = new DiscordColor("#4242f4");
-            embedbuilder.Title = "embed test";
-            embedbuilder.Description = "this is an description";
-            await ctx.RespondAsync(embed: embedbuilder);
             _helpCommand.RunCommand(ctx, _commandList);
         }
 
