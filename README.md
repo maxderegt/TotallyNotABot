@@ -20,5 +20,6 @@ The content of this file should look like this:
 <settings>
     <token>YOUR_TOKEN_HERE</token>
     <prefix>YOUR_PREFIX_HERE</prefix>
+    <spotifyYOUR_SPOTIFY_TOKEN_HERE</spotify>
 </settings>
 ```
