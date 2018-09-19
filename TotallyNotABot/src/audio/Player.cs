@@ -124,10 +124,22 @@ namespace TotallyNotABot.audio
                 Song song = Current.Next();
                 if (song == null)
                 {
-                    // TODO: reached end of playlist, loop if set
-                    await Stop();
                     Current.Clear();
-                    return;
+                    if (Current.Name == null)
+                    {
+                        await Stop();
+                        return;
+                    }
+                    else
+                    {
+                        Current.Restart();
+                        song = Current.Next();
+                        if (song == null)
+                        {
+                            await Stop();
+                            return;
+                        }
+                    }
                 }
 
                 DiscordGame test = new DiscordGame

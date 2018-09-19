@@ -36,6 +36,11 @@ namespace TotallyNotABot.PlayList
             Songs.Add(song);
         }
 
+        public void Restart()
+        {
+            Index = 0;
+        }
+
         public Song Next()
         {
             if (Index < 0 || Index >= Songs.Count)
@@ -70,7 +75,6 @@ namespace TotallyNotABot.PlayList
 
         public override string ToString()
         {
-            
             StringBuilder builder = new StringBuilder(DiscordString.Bold("Current playlist\n").Underline().ToString());
             for (int i = 0; i < Songs.Count; i++)
             {
