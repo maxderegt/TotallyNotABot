@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -26,27 +27,46 @@ namespace TotallyNotABot.core
             try
             {
                 XDocument xml = XDocument.Load(SettingsFile);
-                Token = xml.Descendants("token").First().Value;
-                if (Token.Length == 0)
+                List<XElement> xmlToken = xml.Descendants("token").ToList();
+                if (xmlToken.Any())
+                {
+                    Token = xmlToken.First().Value;
+                }
+                else
                 {
                     throw new InvalidSettingsException("Missing \"token\" in settings!");
                 }
 
-                Prefix = xml.Descendants("prefix").First().Value;
-                if (Prefix.Length == 0)
+                List<XElement> xmlPrefix = xml.Descendants("prefix").ToList();
+                if (xmlPrefix.Any())
+                {
+                    Prefix = xmlPrefix.First().Value;
+                }
+                else
                 {
                     throw new InvalidSettingsException("Missing \"prefix\" in settings!");
                 }
 
-                Spotify = xml.Descendants("spotify").First().Value;
-                if (Spotify.Length > 0)
+
+                List<XElement> xmlSpotify = xml.Descendants("spotify").ToList();
+                if (xmlSpotify.Any())
                 {
-                    Console.WriteLine("Loaded Spotify token");
+                    Spotify = xmlSpotify.First().Value;
                 }
+                else
+                {
+                    Console.Error.WriteLine("No spotify token loaded!");
+                }
+
             }
             catch (FileNotFoundException)
             {
                 Console.WriteLine("Couldn't read settings file: " + SettingsFile);
+                return false;
+            }
+            catch (InvalidSettingsException e)
+            {
+                Console.WriteLine(e.Message);
                 return false;
             }
 
