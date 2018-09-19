@@ -12,7 +12,7 @@ namespace TotallyNotABot.src.commands
 
         public virtual string Help()
         {
-            return "No help function implemented yet";
+            return (name + " has no help function implemented yet");
         }
 
     }
