@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
 using TotallyNotABot.audio;
 using TotallyNotABot.src.commands;
@@ -21,14 +24,16 @@ namespace TotallyNotABot.commands
         private static Play _playCommand;
         private static Stop _stopCommand;
         private static Join _joinCommand;
-        private static Spam _spamCommand;
         private static Leave _leaveCommand;
         private static Next _nextCommand;
         private static PlayList _playListCommand;
+        private static HelpCommando _helpCommand;
 
         // Other stuff
 //        private static Audio _audio;
         private static Player _player;
+        //list of all command (for the help command)
+        private static List<BaseCommand> _commandList;
 
         public static void Init(DiscordClient client, VoiceNextClient voice)
         {
@@ -37,15 +42,33 @@ namespace TotallyNotABot.commands
             _player = new Player();
 
             // Commands
-            _searchCommand = new Search();
-            _startCommand = new Start();
-            _playCommand = new Play();
-            _stopCommand = new Stop();
-            _joinCommand = new Join();
-            _spamCommand = new Spam();
-            _leaveCommand = new Leave();
-            _nextCommand = new Next();
-            _playListCommand = new PlayList();
+            _searchCommand = new Search("search");
+            _startCommand = new Start("start");
+            _playCommand = new Play("play");
+            _stopCommand = new Stop("stop");
+            _joinCommand = new Join("join");
+            _leaveCommand = new Leave("leave");
+            _nextCommand = new Next("next");
+            _playListCommand = new PlayList("playlist");
+            _helpCommand = new HelpCommando("help");
+            _commandList = new List<BaseCommand>() { _joinCommand, _leaveCommand, _searchCommand, _playCommand, _nextCommand, _playListCommand, _stopCommand, _startCommand, _helpCommand};
+        }
+
+        internal static Task Commands_CommandErrored(CommandErrorEventArgs e)
+        {
+            _helpCommand.RunCommand(e.Context, _commandList);
+            return Task.CompletedTask;
+        }
+
+        [Command("help")]
+        public async Task Help(CommandContext ctx)
+        {
+            var embedbuilder = new DiscordEmbedBuilder();
+            embedbuilder.Color = new DiscordColor("#4242f4");
+            embedbuilder.Title = "embed test";
+            embedbuilder.Description = "this is an description";
+            await ctx.RespondAsync(embed: embedbuilder);
+            _helpCommand.RunCommand(ctx, _commandList);
         }
 
         [Command("playlist")]
@@ -65,13 +88,7 @@ namespace TotallyNotABot.commands
         {
             await _searchCommand.RunCommand(ctx, _player);
         }
-
-        [Command("spam")]
-        public async Task Spam(CommandContext ctx)
-        {
-            await _spamCommand.RunCommand(ctx, Discord);
-        }
-
+        
         [Command("start")]
         public async Task Start(CommandContext ctx)
         {

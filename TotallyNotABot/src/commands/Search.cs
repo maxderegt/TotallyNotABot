@@ -7,10 +7,14 @@ using TotallyNotABot.audio;
 using YoutubeExplode;
 using TotallyNotABot.DiscordFormat;
 
-namespace TotallyNotABot.commands
+namespace TotallyNotABot.src.commands
 {
-    class Search
+    class Search : BaseCommand
     {
+        public Search(string name) : base(name)
+        {
+        }
+
         public static async Task<List<Song>> DoSearch(string title, Player player)
         {
             // Get the youtube videos
@@ -56,6 +60,11 @@ namespace TotallyNotABot.commands
             {
                 player.Play();
             }
+        }
+
+        public override string Help()
+        {
+            return (DiscordString.Bold("Search: ") + "\nUse !search [name of song] to search for a song to play/add to playlist");
         }
     }
 }

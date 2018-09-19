@@ -4,11 +4,16 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.VoiceNext;
 using TotallyNotABot.audio;
+using TotallyNotABot.DiscordFormat;
 
-namespace TotallyNotABot.commands
+namespace TotallyNotABot.src.commands
 {
-    class Join
+    class Join : BaseCommand
     {
+        public Join(string name) : base(name)
+        {
+        }
+
         public async Task<VoiceNextConnection> RunCommand(CommandContext ctx, Player player, VoiceNextConnection connection, VoiceNextClient voice)
         {
             if (connection != null) return connection;
@@ -33,5 +38,10 @@ namespace TotallyNotABot.commands
 
             return connection;
         }
+
+        public override string Help()
+        {
+            return (DiscordString.Bold("Join: ") + "\nUse !join when you are in a voice channel to let the bot join your voicechannel");
+        } 
     }
 }
