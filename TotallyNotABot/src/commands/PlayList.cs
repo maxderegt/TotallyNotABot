@@ -102,7 +102,8 @@ namespace TotallyNotABot.commands
                     {
                         list.Add(player.source.SearchList[i2 - 1], true);
                         Storage.SavePlayList(Storage.PlayLists[i]);
-                        await ctx.RespondAsync("Added song " + DiscordString.Bold(player.source.SearchList[i2 - 1].Title) + " to playlist " + DiscordString.Bold(list.Name) + "\n"+ list.ToString());
+                        await ctx.RespondAsync("Added song " + DiscordString.Bold(player.source.SearchList[i2 - 1].Title) + " to playlist " + DiscordString.Bold(list.Name));
+                        await Show();
                     }
                 }
                 catch(Exception ex)
@@ -173,7 +174,11 @@ namespace TotallyNotABot.commands
             if (i != -1)
             {
                 Playlist list = Storage.PlayLists[i];
-                await ctx.RespondAsync(list.ToString());
+                List<string> songs = list.ToStringList();
+                foreach(string songlist in songs)
+                {
+                    await ctx.RespondAsync(songlist);
+                }
             }
         }
 

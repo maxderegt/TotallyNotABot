@@ -89,5 +89,41 @@ namespace TotallyNotABot.PlayList
             }
             return builder.ToString();
         }
+
+        public List<string> ToStringList()
+        {
+            List<string> list = new List<string>();
+
+            int length = 0;
+            StringBuilder currentList = new StringBuilder();
+            for (int i = 0; i < Songs.Count; i++)
+            {
+
+                StringBuilder builder = new StringBuilder();
+                if (i == 0)
+                {
+                    builder.Append(DiscordString.Bold("Current playlist\n").Underline().ToString());
+                }
+
+                PlaylistSong song = Songs[i];
+                builder.Append($"{DiscordString.Bold($"{i + 1}:")} {song.Song.Title}");
+                if (i == Index - 1)
+                {
+                    builder.Append($" - {DiscordString.Bold("Currently playing!")}");
+                }
+
+                builder.Append("\n");
+                length += builder.Length;
+                if (length > 2000)
+                {
+                    list.Add(currentList.ToString());
+                    currentList.Clear();
+                    length = builder.Length;
+                }
+                currentList.Append(builder.ToString());
+            }
+            list.Add(currentList.ToString());
+            return list;
+        }
     }
 }
