@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using TotallyNotABot.audio;
 using TotallyNotABot.DiscordFormat;
+using System.Security.Cryptography;
+
+
 
 namespace TotallyNotABot.PlayList
 {
@@ -34,6 +37,23 @@ namespace TotallyNotABot.PlayList
         public void Add(PlaylistSong song)
         {
             Songs.Add(song);
+        }
+
+        public void Shuffle()
+        {
+            RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
+            int n = Songs.Count;
+            while (n > 1)
+            {
+                byte[] box = new byte[1];
+                do provider.GetBytes(box);
+                while (!(box[0] < n * (byte.MaxValue / n)));
+                int k = (box[0] % n);
+                n--;
+                PlaylistSong value = Songs[k];
+                Songs[k] = Songs[n];
+                Songs[n] = value;
+            }
         }
 
         public void Restart()

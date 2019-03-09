@@ -10,7 +10,7 @@ namespace TotallyNotABot.commands
 {
     class PlayList : src.commands.BaseCommand
     {
-        public readonly List<string> commands = new List<string>(new string[] { "create", "add", "delete", "play", "show" });
+        public readonly List<string> commands = new List<string>(new string[] { "create", "add", "delete", "play", "show", "shuffle" });
         private CommandContext ctx;
         private Player player;
         private string[] msg;
@@ -57,11 +57,26 @@ namespace TotallyNotABot.commands
                 case "play":
                     await Play();
                     break;
+                case "shuffle":
+                    Shuffle();
+                    break;
                 case "show":
                     await Show();
                     break;
             }
             return -1;
+        }
+
+        public async void Shuffle()
+        {
+            int i = await CheckForPlaylist();
+            if (i != -1)
+            {
+                Playlist playlist = Storage.PlayLists[i];
+                playlist.Shuffle();
+            }
+
+            await ctx.RespondAsync("Playlist shuffled");
         }
 
         private async Task<int> CheckForPlaylist()
