@@ -5,12 +5,13 @@ using DSharpPlus.CommandsNext;
 using TotallyNotABot.audio;
 using TotallyNotABot.PlayList;
 using TotallyNotABot.DiscordFormat;
+using System.Text;
 
 namespace TotallyNotABot.commands
 {
     class PlayList : src.commands.BaseCommand
     {
-        public readonly List<string> commands = new List<string>(new string[] { "create", "add", "delete", "play", "show", "shuffle" });
+        public readonly List<string> commands = new List<string>(new string[] { "create", "add", "delete", "play", "show", "shuffle", "showall" });
         private CommandContext ctx;
         private Player player;
         private string[] msg;
@@ -31,7 +32,7 @@ namespace TotallyNotABot.commands
         private async Task<int> CheckMessage()
         {
             // Length of the message
-            if (msg.Length <= 2)
+            if (msg.Length <= 2 & !msg[1].Equals("showall"))
             {
                 await ctx.RespondAsync($"Please use the command !playlist [command] [name] (optional)[1-5]");
                 return -1;
@@ -62,6 +63,9 @@ namespace TotallyNotABot.commands
                     break;
                 case "show":
                     await Show();
+                    break;
+                case "showall":
+                    await ShowAll();
                     break;
             }
             return -1;
@@ -197,6 +201,42 @@ namespace TotallyNotABot.commands
             }
         }
 
+        public async Task ShowAll()
+        {
+            List<string> list = new List<string>();
+
+            int length = 0;
+            StringBuilder currentList = new StringBuilder();
+            for (int i = 0; i < Storage.PlayLists.Count; i++)
+            {
+
+                StringBuilder builder = new StringBuilder();
+                if (i == 0)
+                {
+                    builder.Append(DiscordString.Bold("Current playlists\n").Underline().ToString());
+                }
+
+                Playlist playlist = Storage.PlayLists[i];
+                builder.Append($"{DiscordString.Bold($"{i + 1}:")} {playlist.Name}");
+
+                builder.Append("\n");
+                length += builder.Length;
+                if (length > 2000)
+                {
+                    list.Add(currentList.ToString());
+                    currentList.Clear();
+                    length = builder.Length;
+                }
+                currentList.Append(builder.ToString());
+            }
+            list.Add(currentList.ToString());
+
+            foreach (string songlist in list)
+            {
+                await ctx.RespondAsync(songlist);
+            }
+        }
+
         public override string Help()
         {
             return (DiscordString.Bold("Playlist: ") +
@@ -204,7 +244,8 @@ namespace TotallyNotABot.commands
                 "\nUse !playlist add [name of playlist] [number] to add a song from !search to a playlist" +
                 "\nUse !playlist delete [name of playlist] [number] to delete a song from the playlist" +
                 "\nUse !playlist play [name of playlist] to play a playlist"  +
-                "\nUse !playlist show to show the songs in a playlist");
+                "\nUse !playlist show to show the songs in a playlist" + 
+                "\nUSe !playlist showall to show all saved playlists");
         }
     }
 }
